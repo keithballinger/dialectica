@@ -1,0 +1,3 @@
+Publish
+
+Brief justification: The revised draft presents a highly novel, theoretically grounded approach to denoising quantized logits in LLM inference using a steady-state Kalman filter, with practical calibration, low-overhead integration, and a robust validation plan using open models and code. It meets all constraints: focused on CS/LLM inference, innovative (post-hoc online filtering without retraining), and publishable in top venues like NeurIPS or ICML due to its originality, rigor, and falsifiability. No major gaps; minor details (e.g., exact thresholds) can be refined post-submission.

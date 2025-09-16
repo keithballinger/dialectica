@@ -1,6 +1,0 @@
-constraints: constraints/quantum_ibm_cost.md
-name: default
-next: gpt5
-phase: complete
-round: 3
-selected: 8

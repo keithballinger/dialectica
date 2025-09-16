@@ -13,20 +13,29 @@
 6) Mark task Done in `status.md` with date.
 
 ## Run Workflow (Product Behavior)
-1) Kickoff: choose constraints file(s) under `./constraints/` and generate 10 ideas with GPT5.
-2) Scoring: get Grok4 and Gemini 2.5 Pro ratings (1–10 + short rationale) and save Markdown reports.
-3) Selection: pause for human to pick the idea (interactive prompt).
-4) Drafting: GPT5 writes initial draft once; alternate critique+rewrite Gemini → Grok → GPT5.
+1) Kickoff: choose constraints via files under `./constraints/`, optional inline text, or stdin.
+   - CLI: `--constraints <files> [,files]`, `--constraints-text "..."`, `--constraints-stdin`.
+   - Field auto-detects from the primary constraints file (e.g., `compsci.md` → field `compsci`), or override with `--field`. Domain pack auto-maps from field, or override with `--domain`.
+   - Either generate 10 ideas with the idea generator, or seed from an existing ideas file using `--from-ideas`.
+2) Scoring (single-run flow): obtain ratings from configured raters (≥1) across configured rubric criteria (overall required). Save ratings files and `scoring_prompt.md`.
+3) Selection (single-run flow):
+   - Manual: `dialectica select` shows titles for picking.
+   - Auto: sum across raters × criteria (weights in rubric); tie-break random (optional `--seed`).
+4) Drafting: initial_drafter writes the first draft once; alternate critique+rewrite in critics order.
 5) Judgment First: each critique starts with Reject/Major Revisions/Minor Revisions/Publish.
-   - If a model outputs Publish, it records a judgment only (no new draft).
-6) Pausing: if `--ask-to-continue`, stop after each round for confirmation.
-7) Termination: stop when all three models output “Publish.”
-8) Output: save `paper.md`, `consensus.md`, and all intermediate Markdown files under the run folder.
+   - If Publish, record a judgment only (no new draft).
+6) Termination: stop when at least two models output “Publish” for the latest draft (Publish tied to older drafts is ignored).
+7) Batch mode: `--all-ideas` drafts a separate paper for every idea (no scoring), each in its own run.
+8) Output: save `paper.md` (full), `paper_only.md` (body), `paper_annotated.md` (lay annotations), `consensus.md`, and all intermediate Markdown files under the run folder.
 
 ## Quality Gates
-- Prompts include the constraints verbatim from chosen files.
+- Prompts include constraints verbatim from files plus any inline/STDIN segments.
+- Field and domain pack resolved and persisted to `run.yml`.
+- Ideas include Smart layperson sections and structured fields.
+- Ratings prefer JSON with schema validation (ideas/ratings only); drafts remain Markdown.
+- On invalid JSON, retry up to 2 times with guidance; then fail with artifacts for diagnosis.
 - All provider responses captured to Markdown with timestamps and model identifiers.
-- Runs are reproducible with saved kickoff prompt and selected idea.
+- Runs are reproducible with `run.yml` snapshot, kickoff prompt, constraints sources, and selected idea.
 
 ## Definition of Done (per task)
 - Behavior matches the user guide.

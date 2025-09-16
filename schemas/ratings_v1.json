@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dialectica.ai/schemas/ratings_v1.json",
+  "title": "ratings_v1",
+  "type": "object",
+  "properties": {
+    "items": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "properties": {
+          "index": { "type": "integer", "minimum": 1, "maximum": 10 },
+          "criteria": {
+            "type": "object",
+            "propertyNames": { "type": "string", "minLength": 1 },
+            "patternProperties": {
+              ".*": {
+                "type": "object",
+                "properties": {
+                  "score": { "type": "integer", "minimum": 1, "maximum": 10 },
+                  "rationale": { "type": "string" }
+                },
+                "required": ["score"],
+                "additionalProperties": false
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "required": ["index", "criteria"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["items"],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "properties": {
+        "items": {
+          "items": {
+            "properties": {
+              "criteria": { "required": ["overall"] }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

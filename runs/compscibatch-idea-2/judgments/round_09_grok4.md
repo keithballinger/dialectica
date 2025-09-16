@@ -1,0 +1,3 @@
+Publish
+
+The revised draft effectively addresses the critique points with improved clarity on blockwise aggregation (via precise single-pass softmax and handling of per-chunk value bases), a stronger title, explicit error bound connections, efficient pseudocode, and FD sketch clarification. The overall paper is highly novel in its online subspace projection for LLM inference, well-structured, theoretically grounded, and includes a rigorous validation plan with code and small open models, making it suitable for a leading journal like NeurIPS or ICLR. Preliminary results support the hypothesis, and the falsification-oriented experiments can confirm publishability upon execution.

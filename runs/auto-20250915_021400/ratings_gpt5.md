@@ -1,0 +1,10 @@
+1) Score: 9/10 — Publish; N/Fa/Fe=9/9/8; clean T2→β mapping with 2×2 circuits is testable on IBM and bridges quantal response to device physics with low shot cost.
+2) Score: 7/10 — Major Revisions; N/Fa/Fe=6/8/8; monotone entanglement-threshold selection in Stag Hunt is testable but overlaps prior quantum game literature and needs sharper distinction from known results.
+3) Score: 8/10 — Minor Revisions; N/Fa/Fe=9/7/8; the Helstrom–spread link is conceptually novel and simulatable, but empirical validation via qubit proxy to market types is indirect and needs clearer loss mapping.
+4) Score: 8/10 — Minor Revisions; N/Fa/Fe=8/8/8; coherence-only revenue-equivalence break is distinctive and IBM-testable, but assumptions about bidder encoding and pricing rules require careful justification.
+5) Score: 7/10 — Major Revisions; N/Fa/Fe=8/7/7; expanding the stable matching frontier with quantum advice is original, yet defining and verifying stability under correlated signals is subtle and needs stronger theory-to-experiment mapping.
+6) Score: 7/10 — Major Revisions; N/Fa/Fe=8/7/6; predicted GHZ-driven contribution threshold is interesting but three-qubit fidelity/noise on IBM may blur the jump, so robustness and power analyses are needed.
+7) Score: 8/10 — Minor Revisions; N/Fa/Fe=8/8/8; dephasing-as-discount offers a clean, measurable bargaining prediction with delay sweeps, though equilibrium interpretation beyond the toy mapping needs tightening.
+8) Score: 8/10 — Minor Revisions; N/Fa/Fe=8/7/8; non-orthogonal quantum messages enlarge PBE sets and can be validated via confusion matrices, but incentive-compatibility regions need clearer economic interpretation.
+9) Score: 8/10 — Minor Revisions; N/Fa/Fe=8/7/8; interference visibility as commitment credibility is novel and feasible with idle-time control, yet payoff calibration and entrant thresholds must be tightly specified.
+10) Score: 8/10 — Minor Revisions; N/Fa/Fe=7/8/8; sinusoidal interference biases in zero-sum mixed strategies are straightforward to test, but novelty is moderate relative to established quantum game deviations.

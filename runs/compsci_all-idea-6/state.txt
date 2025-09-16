@@ -1,0 +1,7 @@
+branched_from: runs/compsci_all/ideas_gpt5.md
+constraints: constraints/compsci.md
+name: compsci_all-idea-6
+next: grok
+phase: drafting
+round: 2
+selected: 6

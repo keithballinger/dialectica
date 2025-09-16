@@ -1,0 +1,4 @@
+Publish
+
+Brief critique
+The proposed method is a novel, principled, and well-motivated extension of existing confidence-based halting mechanisms. Its core idea—integrating entropy over a reasoning trajectory to measure cumulative "uncertainty work" and combining it with a stability condition—is a clear and plausible improvement over brittle, instantaneous thresholds. The paper is exceptionally well-structured, featuring a rigorous, pre-registered evaluation protocol with strong baselines, detailed ablations, and a robust commitment to reproducibility. This framework directly addresses common weaknesses in empirical LLM research. The writing is clear, direct, and positions the work effectively. Assuming the proposed experiments validate the claims, this paper is a model of methodological rigor and represents a significant contribution to efficient LLM inference.

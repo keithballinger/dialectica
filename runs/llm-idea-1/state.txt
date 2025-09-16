@@ -1,0 +1,7 @@
+branched_from: runs/llm/ideas_gpt5.md
+constraints: constraints/llm.md
+name: llm-idea-1
+next: grok
+phase: drafting
+round: 11
+selected: 1

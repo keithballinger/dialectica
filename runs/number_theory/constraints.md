@@ -1,0 +1,6 @@
+From: constraints/number_theory.md
+
+- Related to Automorphic Forms & Functoriality
+- Highly novel
+- Publishable in a leading journal for its subfield
+- Uses simulations in python for validation

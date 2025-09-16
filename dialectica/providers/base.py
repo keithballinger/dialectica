@@ -37,7 +37,7 @@ class DryRunProvider:
                 header
                 + "Minor Revisions\n\n"
                 + "Critique: placeholder critique focusing on constraints compliance.\n\n"
-                + "Rewritten Draft\n\n"
+                + "Revised Draft\n\n"
                 + "# Title\n\nAbstract...\n\nMethod...\n\nExperiments...\n\nConclusion...\n"
             )
         if "first draft" in prompt.lower() or "initial draft" in prompt.lower():
@@ -47,4 +47,3 @@ class DryRunProvider:
             )
         # Default fallback
         return header + "Placeholder response for prompt.\n"
-

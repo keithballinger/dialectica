@@ -1,0 +1,7 @@
+branched_from: runs/compsci_all/ideas_gpt5.md
+constraints: constraints/compsci.md
+name: compsci_all-idea-5
+next: gpt5
+phase: complete
+round: 15
+selected: 5

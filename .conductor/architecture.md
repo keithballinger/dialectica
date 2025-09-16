@@ -1,15 +1,16 @@
 # Architecture — Dialectica
 
 ## Overview
-Sequential Python CLI orchestrating three LLM providers via a common interface. All artifacts are Markdown files saved under `./runs/<timestamp>/`.
+Sequential Python CLI orchestrating multiple LLM providers via a common interface. Ideas/ratings prefer structured JSON; drafts remain Markdown. All artifacts are saved under `./runs/<label-or-timestamp>/`.
 
-## Modules (Proposed)
+## Modules (Current)
 - `dialectica/cli/`: CLI commands and argument parsing
   - `ideas.py` — generate ideas command
   - `score.py` — provider scoring command
   - `select.py` — interactive idea selection
   - `draft.py` — drafting loop to consensus
-  - `run.py` — combined flows (e.g., `run all`)
+  - `run.py` — combined flows (e.g., `run all` with `--auto-select`, `--from-ideas`, `--all-ideas`)
+  - `branch.py` — branch from existing ideas into a fresh run
 - `dialectica/providers/`: provider adapters
   - `base.py` — provider interface and shared types
   - `gpt5.py`, `gemini.py`, `grok.py` — concrete adapters
@@ -18,6 +19,7 @@ Sequential Python CLI orchestrating three LLM providers via a common interface. 
   - `prompts.py` — prompt templates and constraint injection
   - `artifacts.py` — file naming, writing Markdown artifacts, transcripts
   - `consensus.py` — checks termination condition
+  - `config.py` — config load/merge/validate, write `run.yml`
 - `dialectica/errors.py` — custom exceptions
 
 ## Provider Interface
@@ -33,27 +35,38 @@ class Provider(Protocol):
 ## Prompts
 - Compose from:
   - System behavior (truth-seeking, judgment-first rule)
-  - Constraints from `./constraints/*.md` (inserted verbatim under “Constraints of Paper”)
-  - Task-specific instructions (ideas, scoring rubric, critique+rewrite)
+  - Constraints from files, inline text, or STDIN (merged verbatim under “Constraints of Paper”)
+  - Field/domain pack for style/examples
+  - Task instructions (ideas with Smart layperson, scoring rubric, critique+rewrite)
 
 ## Runs & Artifacts
-- `./runs/<timestamp>/` structure:
+- `./runs/<timestamp or label>/` structure:
   - `kickoff_prompt.md`
+  - `constraints.md`, `constraints_sources.txt`
   - `ideas_gpt5.md`
-  - `ratings_grok4.md`, `ratings_gemini.md`
+  - `ratings_gpt5.md`, `ratings_grok4.md`, `ratings_gemini.md` (single-run flow)
   - `selected_idea.md`
   - `drafts/round_01_gpt5.md`, `round_02_gemini.md`, `round_03_grok4.md`, ...
-  - `consensus.md`, `paper.md`
+  - `judgments/round_XX_<provider>.md` (written when a provider outputs Publish)
+  - `draft_prompt_round_XX.md` per round
+  - `provenance.md` (for branched runs)
+  - `consensus.md`, `paper.md` (full final draft), `paper_only.md` (paper body only), `paper_annotated.md` (annotations for smart layperson)
   - `transcripts/<provider>/step_<n>.md` (optional)
+  - `run.yml` — resolved snapshot (providers, roles, rubric, policies, prompts, ui, provenance, sources)
 - Naming: include round numbers and provider names for readability.
 
 ## Consensus Logic
-- “Publishable with minor revisions” from all three models on the latest draft.
-- Optionally enforce a max cycle cap (TBD) to prevent runaway loops; prompt user if reached.
+- Done when at least two models output “Publish” on their latest evaluation of the current draft.
+- If a model outputs Publish, that round records a judgment file only (no new draft). The latest draft remains unchanged.
+- Publish judgments tied to older drafts do not count; a new draft invalidates older Publish judgments until models re-evaluate.
+- Max cycle cap ensures progress; user can resume to extend cycles.
 
 ## Config & Secrets
-- `.env` only. Load keys and model names from environment variables.
-- No additional config layers; no telemetry.
+- `dialectica.yml` (project defaults) + environment variables + CLI. Resolved config written to `runs/<id>/run.yml`.
+- `.env` holds secrets (API keys). No telemetry by default.
+## JSON Usage & Retries
+- Ideas/ratings: structured JSON preferred with schema validation (ideas_v1, ratings_v1). On invalid JSON, retry up to 2 times with guidance, then fail hard and persist payloads.
+- Drafts: Markdown only.
 
 ## Error Handling
 - ProviderError, PromptError, ArtifactError for precise failure modes.

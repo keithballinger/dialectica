@@ -1,7 +1,7 @@
 # User Guide — Dialectica
 
 ## Overview
-Dialectica is a Python CLI that coordinates GPT5, Gemini 2.5 Pro, and Grok4 to invent a novel, testable scientific theory and iteratively draft a short Markdown paper until all models agree it is publishable with minor revisions. All artifacts are saved to `./runs/<timestamp>/` as Markdown files.
+Dialectica is a Python CLI that coordinates GPT5, Gemini 2.5 Pro, and Grok4 to invent a novel, testable scientific theory and iteratively draft a short Markdown paper until all models judge “Publish.” All artifacts are saved to `./runs/<timestamp>/` as Markdown files.
 
 ## Requirements
 - macOS
@@ -22,7 +22,7 @@ Dialectica is a Python CLI that coordinates GPT5, Gemini 2.5 Pro, and Grok4 to i
 ## Concepts
 - Constraints: Markdown files under `./constraints/` that define the “Constraints of Paper” section injected verbatim into prompts.
 - Run: A single end-to-end session saved under `./runs/<timestamp>/` with all prompts, responses, and drafts.
-- Consensus: All three models output “Publish” on the latest draft.
+- Consensus: At least two models output “Publish” on the latest draft (Publish tied to older drafts does not count).
 - Pausing: By default, the CLI pauses for idea selection; optionally also after each drafting round.
 
 ## Directory Layout
@@ -34,8 +34,11 @@ Dialectica is a Python CLI that coordinates GPT5, Gemini 2.5 Pro, and Grok4 to i
   - `ratings_gemini.md`
   - `selected_idea.md`
   - `drafts/round_01_gpt5.md`, `round_02_gemini.md`, `round_03_grok4.md`, ...
+  - `judgments/round_XX_<provider>.md` (when a provider outputs Publish)
   - `consensus.md` (termination summary)
-  - `paper.md` (final agreed draft)
+  - `paper.md` (final draft file, may include critique scaffolding)
+  - `paper_only.md` (just the final paper body)
+  - `paper_annotated.md` (paper with inserted notes for a smart layperson; all math terms, variables, and equations explained)
   - `transcripts/<provider>/...` (optional, provider dialogues)
 
 ## CLI Usage (Proposed)
@@ -44,11 +47,14 @@ Note: Command names and flags will be finalized during implementation. The follo
 
 - Initialize a run with constraints and generate ideas:
   - `dialectica run ideas --constraints constraints/quantum_basic.md --count 10`
+  - Add inline constraints: `--constraints-text "Extra bounds here"`
+  - Or pipe from STDIN: `--constraints-stdin` (e.g., `cat extra.md | dialectica run ideas --constraints constraints/quantum_basic.md --constraints-stdin`)
+  - Override field/domain: `--field compsci`, `--domain domain_compsci`
   - Creates a new run folder with `kickoff_prompt.md` and `ideas_gpt5.md`.
 
-- Score all ideas:
+- Score all ideas (single-run flow):
   - `dialectica run score`
-  - Adds `ratings_grok4.md` and `ratings_gemini.md`.
+  - Adds `ratings_gpt5.md`, `ratings_grok4.md`, and `ratings_gemini.md`.
 
 - Select an idea (interactive):
   - `dialectica select`
@@ -59,12 +65,30 @@ Note: Command names and flags will be finalized during implementation. The follo
   - GPT5 writes the first draft (`round_01_gpt5.md`).
   - Alternates critique+rewrite: Gemini (`round_02_gemini.md`), Grok4 (`round_03_grok4.md`), GPT5 (`round_04_gpt5.md`), etc.
   - Each critique begins with a judgment line: Reject, Major Revisions, Minor Revisions, or Publish.
+  - If two models say Publish on the latest draft, the run finalizes even if the third requests revisions.
   - If a model outputs Publish, it records a judgment only (no rewritten draft for that round).
   - If `--ask-to-continue` is provided, the CLI prompts before each next round.
 
 - Auto-run after selection (no pauses except selection):
   - `dialectica run all`
   - Executes ideas → score → select (interactive) → drafting to consensus.
+  - Use `--auto-select --seed 42` to auto-pick highest total score.
+  - Use `--from-ideas runs/compsci/ideas_gpt5.md` to seed from an existing ideas file.
+  - To include extra constraints: `--constraints-text` or `--constraints-stdin`.
+
+- Run all ideas:
+  - `dialectica run all --all-ideas --constraints constraints/quantum_ibm_cost.md --name batch`
+  - Generates (or loads) ideas, then creates separate runs for each idea and drafts each to completion (no initial scoring).
+
+- Start from an existing ideas file:
+  - `dialectica run all --from-ideas runs/compsci/ideas_gpt5.md --auto-select --max-cycles 1000 --name from-compsci`
+  - Copies the ideas file, scores them, auto-selects, and drafts without pauses.
+  - Alternatively, pick a specific idea directly with `--idea 7`.
+
+- Branch from previous ideas (reuse idea set, keep old papers intact):
+  - `dialectica branch --from-run runs/<old_run> --idea 5 --name retry-idea-5 --start --max-cycles 1000`
+  - Creates a new run, copies ideas from the old run, selects idea #5, and immediately starts drafting.
+  - Use `--from-ideas <path>` to branch from a specific ideas file.
 
 ## Prompts & Constraints
 - Place one or more Markdown files in `./constraints/`.

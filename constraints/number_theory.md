@@ -1,0 +1,4 @@
+- Related to Automorphic Forms & Functoriality
+- Highly novel
+- Publishable in a leading journal for its subfield
+- Uses simulations in python for validation

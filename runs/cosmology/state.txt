@@ -1,0 +1,6 @@
+constraints: constraints/cosmo.md
+name: cosmology
+next: gpt5
+phase: complete
+round: 12
+selected: 1

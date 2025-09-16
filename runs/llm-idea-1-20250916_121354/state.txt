@@ -1,0 +1,7 @@
+branched_from: runs/llm-20250916_121210/ideas_gpt5.md
+constraints: constraints/llm.md
+name: llm-idea-1
+next: gpt5
+phase: drafting
+round: 6
+selected: 1

@@ -1,0 +1,10 @@
+1) Score: 9/10 — Publish: Highly novel u–r capacity bounds with a crisp near-unital formula; directly falsifiable via RB+confusion-matrix and mutual-info sweep on 1 qubit, well within IBM budgets.
+2) Score: 8/10 — Minor Revisions: Novel calibrated phase diagram for adaptivity and clean IBM falsification with dynamic circuits, but needs sharper optimal-POVM benchmarking and robustness to SPAM drift.
+3) Score: 7/10 — Major Revisions: Conceptually novel and testable correlated-noise superadditivity, but the claim mixes χ with achievable I and may have small effect sizes—tomographic χ2 vs 2χ1 must be specified and powered.
+4) Score: 5/10 — Major Revisions: Feasible strong-converse test on IBM, but dephasing reduces to a classical BSC where finite-n exponents are well known, so novelty for info theory is weak without a distinctly quantum refinement.
+5) Score: 9/10 — Publish: Elegant, calibration-driven QRAC law (∝ u r) is new, easy to falsify on a single qubit, and highly feasible with clear practical impact.
+6) Score: 8/10 — Minor Revisions: Fresh calibrated information-balance identity with a tight experimental test on 2 qubits, but the δ term and its dependence on readout dephasing need precise definition and error accounting.
+7) Score: 7/10 — Minor Revisions: Interesting and testable one-shot EA optimization with partial entanglement, though prior noisy dense-coding results reduce novelty—clarify regime and metric to ensure leading-journal impact.
+8) Score: 7/10 — Major Revisions: Novel bridge from shadow compressibility to min-entropy with IBM-feasible tests, but theory/finite-sample guarantees and dependence on u need tightening and clearer estimators.
+9) Score: 8/10 — Minor Revisions: Practical, falsifiable mutual-information leak law from residual ZZ with simple IBM experiments, though assumptions (pure ZZ, stationary r) and bound tightness should be validated.
+10) Score: 8/10 — Minor Revisions: New, feasible shadow-based χ estimator with variance control, but unbiasedness under noise and the exact variance–unitarity dependence require more rigorous derivation and stress tests.

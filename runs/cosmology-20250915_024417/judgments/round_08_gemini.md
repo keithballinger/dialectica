@@ -1,0 +1,3 @@
+Publish.
+
+The manuscript has been revised to an exceptional standard, fully and rigorously addressing all prior concerns. Formal gaps in the arbitrage mechanics and deterrence conditions are closed with a proposition and corollary. The timing, metrics, and game-theoretic equilibrium conditions are now precise and well-motivated. The simulation design is robust, incorporating ex-ante profit checks, invariant tests, and specific falsification criteria. The contribution is clearly articulated against related work, and the proposed results directly test the central claims with appropriate quantitative methods. The paper is a model of clarity, rigor, and scientific integrity, presenting a novel and significant contribution to the field.

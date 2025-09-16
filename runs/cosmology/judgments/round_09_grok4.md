@@ -1,0 +1,3 @@
+Publish.
+
+The revised draft effectively addresses all major concerns from the initial critique, providing explicit mathematical derivations, bounded Bell statistics with stated assumptions, precise signal definitions including algorithmic pair-conditioning, and quantified systematics treatment integrated into Python-based simulations. The work is highly novel in proposing a CMB trispectrum probe of primordial entanglement, aligns with quantum gravity in cosmology, and meets publishability standards for a leading journal like Physical Review Letters or the Astrophysical Journal, with robust Python validation.

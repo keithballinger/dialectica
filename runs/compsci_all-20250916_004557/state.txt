@@ -1,0 +1,3 @@
+constraints: constraints/compsci.md
+name: compsci_all
+phase: scored

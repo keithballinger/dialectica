@@ -1,0 +1,3 @@
+Publish
+
+This revised draft effectively addresses the original critique's concerns by reframing claims around induced information rates rather than unconstrained capacity, incorporating non-asymptotic bounds with explicit assumptions, separating observation and input processes, adding detailed measurement protocols with diagnostics, and providing empirical validation with reproducibility. The contributions are novel, grounded in information theory applied to cache side-channels, and suitable for a leading security journal like USENIX Security, with strong evidence from multi-platform experiments. No major issues remain; it's ready for submission with potential minor editorial tweaks.

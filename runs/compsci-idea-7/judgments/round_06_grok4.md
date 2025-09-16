@@ -1,0 +1,3 @@
+Publish
+
+This revised draft effectively addresses the reviewer's minor concerns by clarifying the model's scope (data-averaged capability vs. instance-specific execution), explicitly framing the percolation threshold as necessary but not sufficient with added emphasis on capacity metrics, briefly justifying the non-backtracking operator and union-of-heads assumption, and refining terminology (e.g., "depth-constrained routing"). The theory is highly novel, applying directed percolation to ICL in Transformers with falsifiable predictions and operational metrics, making it suitable for a leading ML journal like JMLR or NeurIPS' theory track. No further revisions needed.

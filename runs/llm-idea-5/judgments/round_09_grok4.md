@@ -1,0 +1,3 @@
+Publish
+
+This revised draft proposal meets all specified constraints: it focuses on LLM inference with a novel decoding algorithm (LCD) that preventively enhances output quality via micro-rollout agreement, promising high impact on reliability in agentic workflows. The approach is highly original, differentiating from prior methods like self-consistency or speculative decoding. It outlines rigorous, falsifiable experiments using small open-source models (e.g., Pythia-1.4B, TinyLlama), with full code for validation, making it suitable for publication in a top venue like ICLR or NeurIPS. The revisions effectively address prior ambiguities, inconsistencies, and conciseness issues without introducing new flaws.

@@ -1,0 +1,6 @@
+constraints: constraints/number_theory.md
+name: number_theory
+next: gpt5
+phase: drafting
+round: 3
+selected: 4

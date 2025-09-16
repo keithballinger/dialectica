@@ -1,0 +1,6 @@
+constraints: constraints/game_theory_econ.md
+name: cosmology
+next: gpt5
+phase: complete
+round: 9
+selected: 7

@@ -1,0 +1,10 @@
+1) Score: 9/10 — Highly novel entanglement trispectrum with fixed dependencies, falsifiable via Python-based optimal estimator on CMB data, feasible using healpy and jax for simulations under cosmology constraints.
+2) Score: 8/10 — Novel running curvature from renormalization with predictive kernels, falsifiable through modified ODEs and emcee fits in Python, feasible but requires careful integration with CAMB for publishable accuracy.
+3) Score: 9/10 — Novel anomaly-linked chiral GW signatures with joint CMB-GW templates, falsifiable by extending Boltzmann solvers in Python, highly feasible with classy wrappers for leading journal standards.
+4) Score: 7/10 — Moderately novel speckle from Planck-scale diffraction, falsifiable with Monte Carlo phase simulations in Python, feasible yet challenged by data noise in gamma-ray transients for full cosmological validation.
+5) Score: 8/10 — Novel nonlocal kernel damping small-scale structure, falsifiable via modified N-body codes in Python, feasible with pyfftw and numba but computationally intensive for quantum gravity constraints.
+6) Score: 9/10 — Highly novel holographic noise with baseline correlations, falsifiable through Gaussian process simulations in Python, directly feasible for cross-site GW data analysis in top journals.
+7) Score: 8/10 — Novel phase-coherent log-periodic bounce features, falsifiable with template fits across spectra in Python, feasible using CLASS and numpyro but needs strong evidence for novelty over prior searches.
+8) Score: 9/10 — Novel entanglement-driven Planck mass variation with slip predictions, falsifiable by perturbation solvers in Python, highly feasible for multi-probe fits meeting publishability in cosmology.
+9) Score: 8/10 — Novel remnants as dark matter with broken SGWB, falsifiable via population evolution in Python, feasible but constrained by joint abundance and GW bounds for quantum gravity novelty.
+10) Score: 9/10 — Highly novel dimensional flow altering damping and distortions, falsifiable with modified Boltzmann solvers in Python, feasible for joint high-ℓ CMB and μ-distortion fits in leading journals.

@@ -3,7 +3,7 @@
 Status legend: [ ] not started · [~] in progress · [x] done
 
 ## Vision
-Build a Python CLI that orchestrates GPT5, Gemini 2.5 Pro, and Grok4 to invent a novel, testable scientific theory under specified constraints, and iteratively draft a short paper in Markdown until consensus of “publishable with minor revisions.” All artifacts are saved under `./runs/<timestamp>/` as Markdown.
+Build a Python CLI that orchestrates GPT5, Gemini 2.5 Pro, and Grok4 to invent a novel, testable scientific theory under specified constraints, and iteratively draft a short paper in Markdown until all models judge “Publish.” All artifacts are saved under `./runs/<timestamp>/` as Markdown.
 
 ## Phases
 
@@ -17,6 +17,7 @@ Build a Python CLI that orchestrates GPT5, Gemini 2.5 Pro, and Grok4 to invent a
   - [ ] Initialize Python project structure.
   - [ ] Add CLI entrypoint and command structure.
   - [ ] Load configuration from `.env` (provider keys, model names).
+  - [ ] Add config-first loader and `run.yml` snapshot.
 
 - [ ] Phase 2: Provider Abstraction
   - [ ] Define provider interface (request/response, metadata, error types).
@@ -27,26 +28,30 @@ Build a Python CLI that orchestrates GPT5, Gemini 2.5 Pro, and Grok4 to invent a
 
 - [ ] Phase 3: Constraints & Prompting
   - [ ] Support external constraints from `./constraints/*.md` files.
+  - [ ] Add inline constraints via `--constraints-text` and `--constraints-stdin`.
+  - [ ] Resolve `field` and domain pack from constraints (CLI overrides allowed).
   - [ ] Template the “Constraints of Paper” section into prompts.
   - [ ] Store kickoff prompt in run folder.
 
 - [ ] Phase 4: Idea Generation & Scoring
   - [ ] Generate 10 ideas (GPT5).
-  - [ ] Score ideas (Grok4) with 1–10 and short rationale.
-  - [ ] Score ideas (Gemini 2.5 Pro) with 1–10 and short rationale.
+  - [ ] Score ideas (GPT5, Grok4, Gemini 2.5 Pro) with 1–10 and short rationale; prefer JSON schema for ratings.
   - [ ] Save ideas and both scoring reports as Markdown.
   - [ ] Interactive idea selection; persist selection.
+  - [ ] Auto-selection: sum three scores; tie-break with seedable RNG.
 
 - [ ] Phase 5: Drafting Loop & Consensus
   - [ ] Initial draft by ChatGPT/GPT5 (once).
   - [ ] Alternating critique+rewrite cycles: Gemini → Grok → GPT5 → ...
-  - [ ] Always start critique with judgment: reject/major revisions/minor revisions.
+  - [ ] Always start critique with judgment: reject/major revisions/minor revisions/publish.
   - [ ] Option `--ask-to-continue` to pause after each round.
-  - [ ] Terminate when all models agree: “publishable with minor revisions.”
+  - [ ] Terminate when ≥2 models output: “Publish.”
   - [ ] Persist each round (critique + new draft) as separate Markdown files.
+  - [ ] Write `paper_only.md` and `paper_annotated.md` on finalize.
 
 - [ ] Phase 6: Artifacts & Output
   - [ ] Save `paper.md` as the latest agreed draft.
+  - [ ] Save `paper_only.md` (body) and `paper_annotated.md` (lay notes).
   - [ ] Save `consensus.md` summarizing the final judgments.
   - [ ] Save full transcripts per model as Markdown.
 
@@ -54,11 +59,14 @@ Build a Python CLI that orchestrates GPT5, Gemini 2.5 Pro, and Grok4 to invent a
   - [ ] Clear progress logs to stdout.
   - [ ] Human-readable file naming in runs directory.
   - [ ] Helpful errors and recovery (retry, resume run).
+  - [ ] Batch mode: `--all-ideas` processes every idea in separate runs.
+  - [ ] Branching: create new run from existing ideas.
 
 - [ ] Phase 8: Documentation
   - [ ] Update user guide as features land.
   - [ ] Add architecture notes for contributors.
   - [ ] Keep `.conductor/status.md` current.
+  - [ ] Document config usage, `run.yml`, field/domain resolution.
 
 ## Non-Goals
 - No budgets or cost enforcement.

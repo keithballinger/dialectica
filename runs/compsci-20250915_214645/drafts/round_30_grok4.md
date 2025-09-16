@@ -1,0 +1,4 @@
+Reject
+
+Brief critique:
+- The provided draft is a critique and revision of a hypothetical paper on preconditioned gradient noise and ICL, but it fails the constraints for high novelty and publishability in a leading AI journal. The core idea builds incrementally on established SDE models of optimization (e.g., Mandt 2017) and SGN regularization (e.g., Jastrzębski 2017), without sufficient groundbreaking insight or empirical scale to stand out. Claims of causality rely on correlative interventions that are not robustly novel against prior work on batch size and noise effects. The proxy metric (PNE) lacks rigorous theoretical derivation and validation, risking overclaim. Empirical setup is underpowered (~1.3B params, N=3 seeds) for top-tier venues like NeurIPS/ICML, which demand larger scales and broader tasks. Related work is improved but still shallow. Overall, the contribution is incremental, not highly novel, warranting rejection for a leading journal.

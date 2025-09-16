@@ -1,0 +1,3 @@
+Publish.
+
+The paper presents a novel and potentially high-impact method for reducing first-token latency by transferring KV cache summaries between semantically similar prompts. The central technical contribution—a position-consistent alignment strategy that preserves relative offsets for RoPE—is a critical insight that correctly addresses the primary challenge in this approach. The proposed experimental protocol is rigorous, featuring appropriate baselines, comprehensive metrics, and pre-registered falsification criteria, which demonstrates a commitment to reproducible and verifiable science. The draft is clear, concise, and directly addresses a significant practical problem in LLM inference.

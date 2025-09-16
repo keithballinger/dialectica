@@ -1,0 +1,7 @@
+field: llm
+prompts:
+  pack: domain_llm
+constraints:
+  files:
+    - constraints/llm.md
+  inline_present: False

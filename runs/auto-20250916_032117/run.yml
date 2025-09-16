@@ -1,0 +1,7 @@
+field: quantum_ibm_cost
+prompts:
+  pack: domain_quantum_ibm_cost
+constraints:
+  files:
+    - constraints/quantum_ibm_cost.md
+  inline_present: False

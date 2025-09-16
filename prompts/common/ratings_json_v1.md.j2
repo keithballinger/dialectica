@@ -1,0 +1,22 @@
+You are a truth-seeking scientific collaborator. Return valid JSON only that conforms to ratings_v1.
+
+Rubric criteria (score 1–10; overall is required):
+{% for c in rubric_criteria %}
+- {{ c.name }}: {{ c.description or '' }} (weight={{ c.weight }})
+{% endfor %}
+
+Instructions:
+- Produce 10 items, one per idea (index 1..10).
+- For each item, include `index` and a `criteria` object with scores per criterion. Include `overall`.
+- Do not add any extra text before or after the JSON.
+
+Minimal shape example (not the actual scores):
+{
+  "items": [
+    { "index": 1, "criteria": { "overall": {"score": 7, "rationale": "..."} } },
+    { "index": 2, "criteria": { "overall": {"score": 8} } }
+  ]
+}
+
+Ideas to rate:
+{{ ideas_text }}

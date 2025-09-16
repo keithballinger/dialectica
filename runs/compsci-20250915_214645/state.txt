@@ -1,0 +1,6 @@
+constraints: constraints/compsci.md
+name: compsci
+next: gpt5
+phase: complete
+round: 33
+selected: 1

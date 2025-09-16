@@ -1,0 +1,10 @@
+1) Score: 8/10 — Minor Revisions: Novelty 8/10, Falsifiability 9/10, Feasibility 7/10; Kalman smoothing of quantized logits is testable and lightweight but risks biasing calibration and adds per-token overhead.
+2) Score: 8/10 — Major Revisions: Novelty 9/10, Falsifiability 9/10, Feasibility 6/10; uncertainty-driven per-token precision is new and measurable, yet kernel switching/scheduler overhead may erase speedups.
+3) Score: 7/10 — Major Revisions: Novelty 8/10, Falsifiability 8/10, Feasibility 5/10; low-rank KV forecasting is innovative but integration complexity and long-context accuracy risk are high.
+4) Score: 7/10 — Major Revisions: Novelty 8/10, Falsifiability 8/10, Feasibility 6/10; soft KV reuse across similar prefixes is creative and evaluable, but state misalignment and retrieval errors threaten early-token fidelity.
+5) Score: 9/10 — Minor Revisions: Novelty 7/10, Falsifiability 10/10, Feasibility 9/10; closed-loop entropy targeting is easy to implement and validate, though prior adaptive temperature work limits novelty.
+6) Score: 8/10 — Minor Revisions: Novelty 8/10, Falsifiability 9/10, Feasibility 8/10; coding-theoretic fusion of speculative branches is novel and practical, with gains dependent on drafter quality and acceptance dynamics.
+7) Score: 8/10 — Minor Revisions: Novelty 8/10, Falsifiability 9/10, Feasibility 8/10; evidence-aligned logit projection is simple to validate and likely boosts faithfulness, with fluency/perplexity trade-offs the main risk.
+8) Score: 7/10 — Major Revisions: Novelty 7/10, Falsifiability 7/10, Feasibility 6/10; online centroid attention overlaps prior clustered/landmark methods and may struggle to beat strong baselines without heavy tuning.
+9) Score: 8/10 — Minor Revisions: Novelty 7/10, Falsifiability 8/10, Feasibility 8/10; a tiny per-step meta-decoder is feasible and broadly testable, but policy overfitting and heuristic features temper novelty.
+10) Score: 7/10 — Major Revisions: Novelty 8/10, Falsifiability 7/10, Feasibility 6/10; attention pattern replay for repeated structures is fresh but robust detection/alignment and avoiding semantic drift are nontrivial.

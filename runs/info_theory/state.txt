@@ -1,0 +1,4 @@
+constraints: constraints/info_theory.md
+name: info_theory
+phase: selected
+selected: 2

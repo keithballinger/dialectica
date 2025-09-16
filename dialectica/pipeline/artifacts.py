@@ -82,3 +82,31 @@ def save_state(run_dir: Path, **entries: str | int) -> None:
         state[str(k)] = str(v)
     lines = [f"{k}: {v}" for k, v in sorted(state.items())]
     write_markdown(run_dir / STATE_FILE, "\n".join(lines) + "\n")
+
+
+def _yaml_dump(obj, indent: int = 0) -> str:
+    sp = "  " * indent
+    if isinstance(obj, dict):
+        lines = []
+        for k, v in obj.items():
+            if isinstance(v, (dict, list)):
+                lines.append(f"{sp}{k}:")
+                lines.append(_yaml_dump(v, indent + 1))
+            else:
+                lines.append(f"{sp}{k}: {v}")
+        return "\n".join(lines)
+    if isinstance(obj, list):
+        lines = []
+        for it in obj:
+            if isinstance(it, (dict, list)):
+                lines.append(f"{sp}-")
+                lines.append(_yaml_dump(it, indent + 1))
+            else:
+                lines.append(f"{sp}- {it}")
+        return "\n".join(lines)
+    return f"{sp}{obj}"
+
+
+def write_run_snapshot(run_dir: Path, snapshot: dict) -> None:
+    content = _yaml_dump(snapshot) + "\n"
+    write_markdown(run_dir / "run.yml", content)

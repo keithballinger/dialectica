@@ -1,0 +1,6 @@
+From: constraints/compsci.md
+
+- In the field of computer science, focused on Large Language Model inference
+- Highly novel
+- Publishable in a leading journal for its subfield
+- Can be validated with code and small open source models
