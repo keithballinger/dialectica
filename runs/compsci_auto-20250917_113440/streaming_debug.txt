@@ -1,0 +1,93 @@
+=== PROMPT ===
+You are a truth-seeking scientific collaborator. You have no ego. You are not sycophantic. Be concise, direct, and evidence-based. Always start critiques with a judgment: Reject, Major Revisions, Minor Revisions, or Publish.
+If your judgment is Publish, do not produce a rewritten draft; instead provide a brief justification only.
+
+
+        Task: Propose EXACTLY 10 ideas (no more, no less) for novel, falsifiable scientific theories that satisfy the constraints.
+        Field: compsci
+
+        Constraints of Paper:
+        {
+  "overview": "Research into using small LLMs for agentic coding",
+  "constraints": {
+    "testable": "Can validate with code"
+  }
+}
+
+
+        IMPORTANT: You must provide EXACTLY 10 ideas numbered 1 through 10. Stop after idea 10.
+
+        Output format for each of the 10 ideas:
+
+        1) <Concise Title>
+        Summary: <one concise sentence>
+        For a smart layperson: <2–3 sentences explaining the idea accessibly>
+        Falsification: <1–3 sentences with concrete steps>
+        Novelty: <one sentence on why this is new>
+
+        2) ... (repeat for ideas 2 through 10)
+
+        STOP after idea 10. Do not provide more than 10 ideas.
+
+=== STREAMING ===
+Major Revisions
+
+1) Micro-Tool Saturation Hypothesis
+Summary: Small LLM coding agents achieve most of their performance gains by integrating up to a modest number (≈15–25) of narrowly-scoped tools, after which returns sharply diminish.
+For a smart layperson: Instead of a few big tools, give the agent many tiny, precise tools (e.g., “run unit tests,” “search symbol,” “format diff”). The claim is that performance improves rapidly as you add such tools but flattens after a few dozen. More tools beyond that mostly add overhead.
+Falsification: Implement identical small-LLM agents varying only in the number of tools drawn from a standardized micro-tool library; measure success on repo-level bug-fix benchmarks while controlling token/latency budgets. Fit performance vs. tool-count curves and test for a saturation point with changepoint analysis. Reproduce across at least two model sizes and two benchmarks.
+Novelty: Prior work explores tool use broadly, but a quantified saturation law for narrow, composable coding micro-tools has not been established.
+
+2) Role-Specialized Swarm Superiority
+Summary: A team of role-specialized small LLM agents (planner, retriever, implementer, tester, repairer) outperforms a single larger LLM under matched token+compute budgets on multi-file code tasks.
+For a smart layperson: Break the job into roles and let several smaller models collaborate like a software team. The claim is that specialization plus coordination beats one big generalist when compute is held constant. This should be most visible on complex changes touching many files.
+Falsification: Build a compute-normalized benchmark harness comparing (a) 1×Large LLM vs (b) a 5-role small-LLM swarm with strict token/latency caps. Evaluate on SWE-bench-like and long-context refactor tasks; test across three seeds and report statistical significance.
+Novelty: While multi-agent coding exists, a compute-normalized superiority claim for role specialization versus a single larger coder is untested.
+
+3) AST-Retrieval Power Law
+Summary: Success probability of small-LLM code editing follows a power law in the fraction of relevant AST nodes retrieved into context.
+For a smart layperson: If you can bring the most relevant code pieces into the model’s view, it does much better. The theory predicts a specific mathematical relationship: steadily better results as you retrieve more truly relevant code pieces, not just more text.
+Falsification: Construct tasks with known ground-truth relevant AST nodes; vary retrieval recall in controlled increments while holding prompt length constant via replacement. Fit performance vs. relevant-node recall to a power law and compare against linear/logistic baselines via AIC/BIC.
+Novelty: Retrieval helps is known, but a concrete scaling law tied to AST-level relevance (not token count) has not been empirically formulated.
+
+4) Compiler-Error Feedback Beats Preference Learning
+Summary: Online learning from compiler/type/test error messages yields larger performance gains for small LLM coders than equal-sized preference-supervised fine-tuning.
+For a smart layperson: Let the model learn directly from compilers and tests complaining about its mistakes, instead of learning from human likes/dislikes. The claim is that these machine errors teach coding skills more efficiently.
+Falsification: Train matched small LLMs with (a) online error-supervision (compilation/test failures and fixes) vs (b) preference fine-tuning of equal token budget; evaluate on held-out coding tasks with strict generalization. Compare effect sizes and learning curves.
+Novelty: Although error messages are used at inference, a head-to-head sample-efficiency superiority claim over preference learning for code agents is novel.
+
+5) Property-Test Self-Play Improves Quadratically Initially
+Summary: Iterative self-play that first synthesizes property tests then writes code reduces bug density with an initial near-quadratic improvement across the first few iterations before tapering.
+For a smart layperson: The model writes tests about what the program should do, then writes code to pass them, and repeats. Early rounds compound rapidly because stronger tests drive better fixes, which inspire even stronger tests.
+Falsification: Implement a loop: generate properties, generate code, run tests, mutate properties; measure bug density across iterations on diverse tasks. Fit improvement to polynomial vs. exponential/logistic models; verify a near-quadratic fit for early rounds and a later taper.
+Novelty: Self-play for coding exists, but a precise early-iteration improvement shape grounded in property-first cycles has not been posited or measured.
+
+6) Planning-Horizon Threshold by Codebase Scale
+Summary: There is a critical codebase scale (e.g., number of files or dependency depth) beyond which explicit task-graph planning beats reactive step-by-step editing for small LLM agents.
+For a smart layperson: For tiny projects, reacting to errors is fine; for big projects, you need a plan. The hypothesis predicts a measurable tipping point where planning becomes necessary for success.
+Falsification: Create synthetic and real repos with controlled size/depth; compare a planner (task DAG with milestones) vs. a reactive agent under equal token/compute. Identify the scale where planner wins with statistical significance; replicate across model sizes.
+Novelty: While planning helps qualitatively, a measurable threshold tied to codebase scale/dependencies is new.
+
+7) Grammar- and Schema-Constrained Decoding Parity
+Summary: Enforcing typed grammars and API schemas during decoding lets a 7B model match or exceed a 34B model on API-heavy coding tasks at ≤1/3 the token budget.
+For a smart layperson: Force the model to only produce well-formed, type-correct code that matches known APIs. This constraint removes many silly mistakes, making small models act like bigger ones without more compute.
+Falsification: Implement grammar-constrained decoding with API schemas; compare 7B constrained vs. 34B unconstrained on API-centric benchmarks under token caps. Measure functional correctness and latency; test parity or superiority with confidence intervals.
+Novelty: Constrained decoding is known, but a quantified parity claim against much larger models on API-heavy tasks with strict token savings is novel.
+
+8) Error-Locality Oracle Equivalence
+Summary: Providing exact failing test names and stack trace line numbers makes a 7B coder perform equivalently to a 13B coder without such locality, under matched prompts.
+For a smart layperson: Telling a small model exactly where it hurts (which test, which line) can make it as effective as a bigger model that has to guess. The claim is an equivalence: precise error clues substitute for parameters.
+Falsification: Run ablations on repo-level bug-fix tasks: 7B+error-locality vs. 13B without it, matched on token limits. Compare pass rates and edit correctness; verify statistical equivalence within a predefined margin (e.g., ±3%).
+Novelty: Although logs help, a parameter-equivalence statement grounded in error-locality has not been formalized.
+
+9) Trace-Replay Curriculum Induces Monotonic Learning
+Summary: Training small LLM agents with a curriculum that replays and edits their own failing execution traces yields monotonic performance improvements across episodes, unlike non-replay curricula which plateau early.
+For a smart layperson: Save the agent’s past mistakes and walk it through fixing them in order. This “study your errors” curriculum is predicted to steadily improve results instead of stalling.
+Falsification: Compare agents trained with (a) trace-replay editing curriculum vs. (b) shuffled/no-replay on the same task pool and tokens. Track episode-wise success; test for monotonic trend using nonparametric trend tests and absence of early plateau.
+Novelty: Error replay is common in RL, but a monotonicity guarantee claim for coding agents with explicit trace-edit curricula is new.
+
+10) Atomic Multi-File Edit Advantage
+Summary: Allowing small LLM agents to stage atomic, multi-file commits gated by tests yields higher success and fewer regressions than single-file, incremental edits under identical budgets.
+For a smart layperson: Let the agent prepare a set of coordinated changes across files and commit them only if tests pass, instead of making piecemeal edits that can break things. Coordinated changes reduce thrashing.
+Falsification: Implement two agents differing only in edit mode: atomic multi-file vs. stepwise single-file; run on multi-module bug-fix/refactor tasks with equal token/time. Measure task success, revert rate, and regression counts; analyze significance.
+Novelty: Multi-file editing is used, but a controlled claim that atomic commit semantics systematically outperform incremental edits for small LLM coders is untested.

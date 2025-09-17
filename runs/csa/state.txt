@@ -1,0 +1,5 @@
+constraints: constraints/csa_constraints.json
+domain: domain_compsci
+field: compsci
+name: csa
+phase: ideas

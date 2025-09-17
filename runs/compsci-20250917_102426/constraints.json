@@ -1,0 +1,6 @@
+{
+  "overview": "small llms",
+  "constraints": {
+    "testable": "verifies with code"
+  }
+}

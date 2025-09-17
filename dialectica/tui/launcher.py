@@ -10,12 +10,13 @@ from textual.app import App, ComposeResult
 from textual.widgets import Static, Header, Footer, Label, Button, Input, TextArea, Log
 from textual.containers import Horizontal, Vertical, ScrollableContainer
 from textual.reactive import reactive
+from textual.screen import Screen
 
 from ..pipeline import runner
 from ..pipeline.artifacts import latest_run_dir, load_state, save_state
 
 
-class LauncherApp(App):
+class LauncherScreen(Screen):
     TITLE = "Dialectica Launcher"
     CSS = """
     Screen {
@@ -110,18 +111,19 @@ class LauncherApp(App):
 
     def __init__(self):
         super().__init__()
-        self.constraints = {}
+        # Pre-fill with test constraints
+        self.constraints = {
+            "testable": "Can validate with code"
+        }
         self.running = False
 
     def compose(self) -> ComposeResult:
-        yield Header(show_clock=True)
-
         with ScrollableContainer(id="launcher-container"):
             yield Label("[bold]Create New Dialectica Run[/bold]")
 
             with Vertical(classes="form-group"):
                 yield Label("Run Name:")
-                yield Input(placeholder="e.g., quantum_gravity_theory", id="run-name")
+                yield Input(placeholder="e.g., quantum_gravity_theory", id="run-name", value="compsci_auto")
 
             with Vertical(classes="form-group"):
                 yield Label("Field:")
@@ -142,9 +144,7 @@ class LauncherApp(App):
             with Vertical(classes="form-group"):
                 yield Label("Constraints Overview:")
                 yield TextArea(
-                    "Describe the constraints for your theory...\n"
-                    "E.g., Must be testable with current technology, "
-                    "must relate to quantum computing, etc.",
+                    "Research into using small LLMs for agentic coding",
                     id="overview"
                 )
 
@@ -163,8 +163,6 @@ class LauncherApp(App):
                 yield Button("Exit", id="exit", variant="error")
 
             yield Log(id="log-panel", highlight=True)
-
-        yield Footer()
 
     def on_mount(self) -> None:
         self.query_one("#run-name").focus()
@@ -245,76 +243,70 @@ class LauncherApp(App):
             "constraints": self.constraints
         }
 
-        # Start run in background
-        self.running = True
-        self.notify(f"Starting run: {run_name}", severity="info")
+        # Write temporary constraints file
+        constraints_dir = Path("constraints")
+        constraints_dir.mkdir(exist_ok=True)
+        tmp_path = constraints_dir / f"{run_name}_constraints.json"
+        tmp_path.write_text(json.dumps(constraints_obj, indent=2), encoding="utf-8")
 
-        def run_pipeline():
-            try:
-                # Write temporary constraints file
-                constraints_dir = Path("constraints")
-                constraints_dir.mkdir(exist_ok=True)
-                tmp_path = constraints_dir / f"{run_name}_constraints.json"
-                tmp_path.write_text(json.dumps(constraints_obj, indent=2), encoding="utf-8")
+        try:
+            # Kickoff run
+            run_dir = runner.kickoff_run(
+                [tmp_path],
+                name=run_name,
+                field=field,
+                domain_pack=domain
+            )
 
-                log.write(f"[green]Created constraints file: {tmp_path}[/]\n")
+            # Switch to streaming generation screen
+            # Use improved ideas streaming with buffering and list view
+            from .ideas_streaming import IdeasStreamingScreen
+            from .run_dashboard import IdeasScoringScreen
 
-                # Kickoff run
-                run_dir = runner.kickoff_run(
-                    [tmp_path],
-                    name=run_name,
-                    field=field,
-                    domain_pack=domain
-                )
-                log.write(f"[green]Run started: {run_dir}[/]\n")
+            # Build the prompt for idea generation
+            from ..pipeline.prompts import compose_ideas_prompt
+            from ..pipeline.artifacts import read_text
 
-                # Generate ideas
-                log.write("[yellow]Generating ideas...[/]\n")
-                runner.generate_ideas(run_dir, [tmp_path])
-                log.write("[green]✓ Ideas generated[/]\n")
+            constraints_text = read_text(run_dir / "constraints.json")
+            prompt = compose_ideas_prompt(constraints_text, field=field)
 
-                # Score ideas
-                log.write("[yellow]Scoring ideas...[/]\n")
-                runner.score_ideas(run_dir, [tmp_path])
-                log.write("[green]✓ Ideas scored[/]\n")
+            # Push improved streaming screen with list view
+            self.app.push_screen(IdeasStreamingScreen(run_dir, prompt))
 
-                # Auto-select best idea
-                log.write("[yellow]Selecting best idea...[/]\n")
-                selected = runner.auto_select_by_sum(run_dir)
-                log.write(f"[green]✓ Selected idea #{selected}[/]\n")
+            # Start pipeline in background (for scoring and beyond)
+            def run_pipeline():
+                try:
+                    # Wait a bit for ideas to be saved
+                    import time
+                    time.sleep(5)
 
-                # Draft to consensus
-                log.write("[yellow]Starting drafting process...[/]\n")
-                runner.first_draft(run_dir, [tmp_path])
+                    # Check if ideas were generated
+                    ideas_file = run_dir / "ideas.json"
+                    while not ideas_file.exists():
+                        time.sleep(1)
 
-                state = load_state(run_dir)
-                current_round = int(state.get("round", "1")) + 1
-                next_provider = state.get("next", "gemini")
-                max_cycles = 10
+                    runner.score_ideas(run_dir, [tmp_path])
+                    selected = runner.auto_select_by_sum(run_dir)
+                    runner.first_draft(run_dir, [tmp_path])
 
-                for cycle in range(max_cycles):
-                    log.write(f"[cyan]Round {current_round} → {next_provider}[/]\n")
-                    current_round, next_provider = runner.next_round(
-                        run_dir, [tmp_path], current_round, next_provider
-                    )
+                    state = load_state(run_dir)
+                    current_round = int(state.get("round", "1")) + 1
+                    next_provider = state.get("next", "gemini")
+                    max_cycles = 10
 
-                    if runner.check_consensus_and_finalize(run_dir):
-                        log.write("[green bold]✅ Consensus reached! Paper finalized.[/]\n")
-                        log.write(f"[green]Output: {run_dir}/paper.md[/]\n")
-                        break
-                else:
-                    log.write("[yellow]Max cycles reached[/]\n")
+                    for cycle in range(max_cycles):
+                        current_round, next_provider = runner.next_round(
+                            run_dir, [tmp_path], current_round, next_provider
+                        )
+                        if runner.check_consensus_and_finalize(run_dir):
+                            break
+                except Exception as e:
+                    self.app.call_from_thread(lambda: self.notify(f"Pipeline error: {e}", severity="error"))
 
-                log.write(f"\n[bold green]Run complete! Files saved to:[/]\n{run_dir}\n")
-                self.notify("Run completed successfully!", severity="success")
+            threading.Thread(target=run_pipeline, daemon=True).start()
 
-            except Exception as e:
-                log.write(f"[red]Error: {e}[/]\n")
-                self.notify(f"Run failed: {e}", severity="error")
-            finally:
-                self.running = False
-
-        threading.Thread(target=run_pipeline, daemon=True).start()
+        except Exception as e:
+            self.notify(f"Run failed: {e}", severity="error")
 
     def action_toggle_log(self) -> None:
         log = self.query_one("#log-panel", Log)
@@ -326,6 +318,27 @@ class LauncherApp(App):
     def action_submit(self) -> None:
         if not self.running:
             self.launch_run()
+
+
+class LauncherApp(App):
+    """Main app that manages screens"""
+    TITLE = "Dialectica"
+
+    BINDINGS = [
+        ("q", "quit", "Quit"),
+        ("escape", "back", "Back"),
+    ]
+
+    def compose(self) -> ComposeResult:
+        yield Header(show_clock=True)
+        yield Footer()
+
+    def on_mount(self) -> None:
+        self.push_screen(LauncherScreen())
+
+    def action_back(self) -> None:
+        if len(self.screen_stack) > 1:
+            self.pop_screen()
 
 
 def run_launcher() -> int:

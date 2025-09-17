@@ -1,0 +1,5 @@
+constraints: constraints/compscillm_constraints.json
+domain: domain_compsci
+field: compsci
+name: compscillm
+phase: kickoff

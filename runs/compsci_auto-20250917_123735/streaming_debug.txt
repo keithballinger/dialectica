@@ -1,0 +1,293 @@
+=== PROMPT ===
+You are a creative scientific researcher. Be direct and concise.
+
+        Task: Propose EXACTLY 10 ideas (no more, no less) for novel, falsifiable scientific theories that satisfy the constraints.
+        Field: compsci
+
+        Constraints of Paper:
+        {
+  "overview": "Research into using small LLMs for agentic coding",
+  "constraints": {
+    "testable": "Can validate with code"
+  }
+}
+
+
+        IMPORTANT: You must provide EXACTLY 10 ideas numbered 1 through 10. Stop after idea 10.
+
+        Output format for each of the 10 ideas:
+
+        1) <Concise Title>
+        Summary: <one concise sentence>
+        For a smart layperson: <2–3 sentences explaining the idea accessibly>
+        Falsification: <1–3 sentences with concrete steps>
+        Novelty: <one sentence on why this is new>
+
+        2) ... (repeat for ideas 2 through 10)
+
+        STOP after idea 10. Do not provide more than 10 ideas.
+
+=== STREAMING ===
+1) Sketch
+Found idea 1: Sketch...
+
+=== DISPLAY UPDATE ===
+Idea 1: Sketch
+  Summary: 
++Solve Beats Big Models Under Equal Compute
+Summary: A small LLM that first writes high-level program sketches and then fills them via constraint solving will outperform a single-pass large LLM on code synthesis under a fixed compute budget.
+For a smart layperson: Instead of writing full code in one shot, the small model first outlines the structure, then uses a solver to make the details consistent. This two-step process can be cheaper and more reliable. The claim is that, given the same total compute, it will do better than a big model’s one-shot attempt.
+Falsification: Implement a sketch→constraint-solver pipeline using a 3–7B code LLM and Z3/pytype/mypy as constraints; evaluate pass@1/5 on HumanEval, MBPP, and CodeContests under equal token and wall-clock budgets versus a single-shot 70B or GPT-4 class model. If the small LLM pipeline does not significantly exceed the large model’s accuracy within the budget, the theory is false.
+Novelty: It formalizes and tests a compute-normalized advantage of sketch+solve specifically for small LLM agentic coding.
+
+2) Static
+Found idea 2: Static...
+
+=== DISPLAY UPDATE ===
+Idea 1: Sketch
+  Summary: 
+Idea 2: Static
+  Summary: 
+-Analysis Reward Is Sufficient for Self-Refinement
+Summary: Deterministic static-analysis signals alone can drive iterative self-revision loops that materially improve small LLM coding success.
+For a smart layperson: The model writes code, then tools like type checkers and linters point out issues, and the model revises based only on those tool messages. The idea is you don’t need human feedback or expensive training, just automatic checks. This should notably raise correctness.
+Falsification: Build an agent using flake8, mypy, bandit, and pydocstyle as feedback, with a 3–7B LLM performing N revision cycles; compare to equal-budget single-shot and ReAct baselines on HumanEval+, MBPP-ET, and custom type-heavy tasks. If static-analysis-only loops fail to yield statistically significant gains, the theory is false.
+Novelty: It isolates static signals as the sole driver of improvement and quantifies their sufficiency for small LLM agents.
+
+3) Call
+Found idea 3: Call...
+
+=== DISPLAY UPDATE ===
+Idea 1: Sketch
+  Summary: 
+Idea 2: Static
+  Summary: 
+Idea 3: Call
+  Summary: 
+-Graph-First Planning Improves Repository-Scale Edits
+Summary: Making a small LLM draft a target call graph before editing code yields higher success on multi-file repo tasks than edit-first strategies.
+For a smart layperson: Before changing a big codebase, the model maps which functions will call which, like a blueprint. With that plan, edits become more coordinated and less error-prone. This should reduce breakages in real projects.
+Falsification: On SWE-bench-lite and RepoBench, compare an agent that plans a call graph (via static analysis + LLM synthesis) then edits, against an edit-first ReAct agent under equal tool/time budgets; measure patch acceptance and test pass rates. If planning doesn’t improve outcomes, the theory is false.
+Novelty: It proposes call-graph planning as an explicit first-class step for small LLM repository agents.
+
+4) API
+Found idea 4: API...
+
+=== DISPLAY UPDATE ===
+Idea 1: Sketch
+  Summary: 
+Idea 2: Static
+  Summary: 
+Idea 3: Call
+  Summary: 
+Idea 4: API
+  Summary: 
+- and Grammar-Constrained AST Decoding Cuts Hallucinations
+Summary: Enforcing both language grammar and repository-specific API schemas during decoding reduces small LLM API hallucinations and runtime errors.
+For a smart layperson: The model is only allowed to write code that follows the language rules and uses known functions from the project. This reduces guesswork and silly mistakes. It should crash less and use the right tools.
+Falsification: Implement constrained decoding with tree-sitter grammars and API symbol tables extracted by static analysis; compare exception rate, unknown-symbol rate, and task accuracy on HumanEval, SWE-bench-lite, and an internal SDK task set versus unconstrained decoding. If no reduction in hallucinations or accuracy gain occurs, the theory is false.
+Novelty: It jointly constrains decoding by grammar and repo-derived APIs tailored to small LLM agent behavior.
+
+5) Test
+Found idea 5: Test...
+
+=== DISPLAY UPDATE ===
+Idea 1: Sketch
+  Summary: 
+Idea 2: Static
+  Summary: 
+Idea 3: Call
+  Summary: 
+Idea 4: API
+  Summary: 
+Idea 5: Test
+  Summary: 
+-First Deliberation Outperforms Code-First for Small LLMs
+Summary: Having small LLMs generate unit tests before implementation yields higher correctness than generating code first.
+For a smart layperson: Like test-driven development, the model writes tests to define the goal, then writes code to pass them. The tests act as a guide and a check. This should make the final code more accurate.
+Falsification: Evaluate a 3–7B agent with a test-first loop (generate tests → run → implement → iterate) versus code-first on MBPP, HumanEval+, and LeetCode-hard subset; compare pass@1 and repair iterations under equal budgets. If test-first doesn’t outperform, the theory is false.
+Novelty: It frames TDD as an internal deliberation strategy specifically for small LLM coding agents and measures its net effect.
+
+6) Repo
+Found idea 6: Repo...
+
+=== DISPLAY UPDATE ===
+Idea 1: Sketch
+  Summary: 
+Idea 2: Static
+  Summary: 
+Idea 3: Call
+  Summary: 
+Idea 4: API
+  Summary: 
+Idea 5: Test
+  Summary: 
+Idea 6: Repo
+  Summary: 
+ Affordance Retrieval Enables Better Tool Use
+Summary: Retrieving repository “affordances” (build scripts, CI configs, Makefiles) before planning improves small LLM tool selection and task success.
+For a smart layperson: Projects contain clues about how to build and test themselves. If the model reads those first, it can choose the right commands and paths. That should reduce trial-and-error.
+Falsification: Build a retriever for repo affordances and inject them into the planning context for a 3–7B agent; compare tool-call accuracy, command success rate, and final task success on SWE-bench-lite and RepoLevel tasks versus a no-affordance baseline. If metrics don’t improve, the theory is false.
+Novelty: It operationalizes and tests “affordance retrieval” as a distinct retrieval class for coding agents.
+
+7) Error
+Found idea 7: Error...
+
+=== DISPLAY UPDATE ===
+Idea 1: Sketch
+  Summary: 
+Idea 2: Static
+  Summary: 
+Idea 3: Call
+  Summary: 
+Idea 4: API
+  Summary: 
+Idea 5: Test
+  Summary: 
+Idea 6: Repo
+  Summary: 
+Idea 7: Error
+  Summary: 
+-Cluster-Guided Patch Sampling Boosts Success at Fixed Budget
+Summary: Clustering compiler/runtime error signatures to guide diverse next attempts improves small LLM repair success under fixed attempt budgets.
+For a smart layperson: When code fails, errors often repeat patterns; grouping them helps the model try different kinds of fixes rather than the same one. This spreads bets wisely. You get better results without spending more compute.
+Falsification: Implement k-means or locality-sensitive hashing on error traces to diversify subsequent patches from a 3–7B LLM; compare pass@k and time-to-fix on HumanEval-x, MBPP-ET, and pytest-based bug-fix tasks versus naive sampling with equal attempts. If no improvement occurs, the theory is false.
+Novelty: It introduces failure-mode clustering as a control signal for small LLM patch generation.
+
+8) Type
+Found idea 8: Type...
+
+=== DISPLAY UPDATE ===
+Idea 1: Sketch
+  Summary: 
+Idea 2: Static
+  Summary: 
+Idea 3: Call
+  Summary: 
+Idea 4: API
+  Summary: 
+Idea 5: Test
+  Summary: 
+Idea 6: Repo
+  Summary: 
+Idea 7: Error
+  Summary: 
+Idea 8: Type
+  Summary: 
+-Directed Stub Planning Reduces Logical Errors
+Summary: Having small LLMs first synthesize typed stubs and contracts, then fill implementations, reduces logical errors and retries.
+For a smart layperson: The model writes function headers with types and simple rules (pre/postconditions) before writing the body. Clear interfaces reduce confusion. Fewer mistakes follow.
+Falsification: Compare an agent that does stub+contract planning (with mypy and simple contract checks) to a direct-implementation baseline on MBPP, HumanEval+, and typed-kata tasks; measure mypy-clean rate, pass@1, and iteration count under equal budgets. If metrics don’t improve, the theory is false.
+Novelty: It combines type- and contract-first planning as a distinct control policy for small LLM agents.
+
+9) Minimal
+Found idea 9: Minimal...
+
+=== DISPLAY UPDATE ===
+Idea 1: Sketch
+  Summary: 
+Idea 2: Static
+  Summary: 
+Idea 3: Call
+  Summary: 
+Idea 4: API
+  Summary: 
+Idea 5: Test
+  Summary: 
+Idea 6: Repo
+  Summary: 
+Idea 7: Error
+  Summary: 
+Idea 8: Type
+  Summary: 
+Idea 9: Minimal
+  Summary: 
+ FSM Tool Protocol Is Sufficient for Most Tasks
+Summary: A fixed finite-state machine over tools (search, edit, run, test) can match or exceed free-form ReAct for small LLM coding under equal budgets.
+For a smart layperson: Instead of letting the model improvise tool use, we lock it into a simple loop: look up info, edit, run, and test. This reduces confusion and wasted steps. The claim is that simpler control works just as well or better.
+Falsification: Implement an FSM agent with bounded transitions versus a free-form ReAct agent using the same 3–7B model and tools; evaluate success and tool-call counts on SWE-bench-lite and HumanEval+ under equal token/time budgets. If FSM doesn’t match or beat ReAct, the theory is false.
+Novelty: It posits and tests sufficiency of a minimal, deterministic tool-use protocol for small LLMs.
+
+10) Compet
+Found idea 10: Compet...
+
+=== DISPLAY UPDATE ===
+Idea 1: Sketch
+  Summary: 
+Idea 2: Static
+  Summary: 
+Idea 3: Call
+  Summary: 
+Idea 4: API
+  Summary: 
+Idea 5: Test
+  Summary: 
+Idea 6: Repo
+  Summary: 
+Idea 7: Error
+  Summary: 
+Idea 8: Type
+  Summary: 
+Idea 9: Minimal
+  Summary: 
+Idea 10: Compet
+  Summary: 
+ence Probes Enable Optimal Tool Gating
+Summary: A lightweight probe predicting per-task benefit of executing code/tests enables small LLMs to gate expensive tools and improve accuracy-per-compute.
+For a smart layperson: Before running tests or code, the agent quickly estimates whether doing so will help. If not, it saves time; if yes, it runs them. Smarter decisions mean better results for the same cost.
+Falsification: Train a logistic probe on prompt/model features to predict “execute tools?” decisions, then deploy in a 3–7B agent; compare accuracy and compute usage to always-run and never-run baselines on MBPP-ET, HumanEval+, and SWE-bench-lite. If the gated agent doesn’t improve accuracy-per-compute, the theory is false.
+Novelty: It introduces an explicit, learned competence gate for tool invocation tailored to small LLM coding agents.
+=== PARSING FULL IDEAS ===
+Total text length: 8800
+Updated idea 1 with details
+  Summary: A small LLM that first writes high-level program sketches and then fills them via constraint solving...
+  Layperson: Instead of writing full code in one shot, the small model first outlines the structure, then uses a ...
+Updated idea 2 with details
+  Summary: Deterministic static-analysis signals alone can drive iterative self-revision loops that materially ...
+  Layperson: The model writes code, then tools like type checkers and linters point out issues, and the model rev...
+Updated idea 3 with details
+  Summary: Making a small LLM draft a target call graph before editing code yields higher success on multi-file...
+  Layperson: Before changing a big codebase, the model maps which functions will call which, like a blueprint. Wi...
+Updated idea 4 with details
+  Summary: Enforcing both language grammar and repository-specific API schemas during decoding reduces small LL...
+  Layperson: The model is only allowed to write code that follows the language rules and uses known functions fro...
+Updated idea 5 with details
+  Summary: Having small LLMs generate unit tests before implementation yields higher correctness than generatin...
+  Layperson: Like test-driven development, the model writes tests to define the goal, then writes code to pass th...
+Updated idea 6 with details
+  Summary: Retrieving repository “affordances” (build scripts, CI configs, Makefiles) before planning improves ...
+  Layperson: Projects contain clues about how to build and test themselves. If the model reads those first, it ca...
+Updated idea 7 with details
+  Summary: Clustering compiler/runtime error signatures to guide diverse next attempts improves small LLM repai...
+  Layperson: When code fails, errors often repeat patterns; grouping them helps the model try different kinds of ...
+Updated idea 8 with details
+  Summary: Having small LLMs first synthesize typed stubs and contracts, then fill implementations, reduces log...
+  Layperson: The model writes function headers with types and simple rules (pre/postconditions) before writing th...
+Updated idea 9 with details
+  Summary: A fixed finite-state machine over tools (search, edit, run, test) can match or exceed free-form ReAc...
+  Layperson: Instead of letting the model improvise tool use, we lock it into a simple loop: look up info, edit, ...
+Updated idea 10 with details
+  Summary: A lightweight probe predicting per-task benefit of executing code/tests enables small LLMs to gate e...
+  Layperson: Before running tests or code, the agent quickly estimates whether doing so will help. If not, it sav...
+
+=== DISPLAY UPDATE ===
+Idea 1: Sketch
+  Summary: A small LLM that first writes high-level program sketches and then fills them via constraint solving
+Idea 2: Static
+  Summary: Deterministic static-analysis signals alone can drive iterative self-revision loops that materially 
+Idea 3: Call
+  Summary: Making a small LLM draft a target call graph before editing code yields higher success on multi-file
+Idea 4: API
+  Summary: Enforcing both language grammar and repository-specific API schemas during decoding reduces small LL
+Idea 5: Test
+  Summary: Having small LLMs generate unit tests before implementation yields higher correctness than generatin
+Idea 6: Repo
+  Summary: Retrieving repository “affordances” (build scripts, CI configs, Makefiles) before planning improves 
+Idea 7: Error
+  Summary: Clustering compiler/runtime error signatures to guide diverse next attempts improves small LLM repai
+Idea 8: Type
+  Summary: Having small LLMs first synthesize typed stubs and contracts, then fill implementations, reduces log
+Idea 9: Minimal
+  Summary: A fixed finite-state machine over tools (search, edit, run, test) can match or exceed free-form ReAc
+Idea 10: Compet
+  Summary: A lightweight probe predicting per-task benefit of executing code/tests enables small LLMs to gate e

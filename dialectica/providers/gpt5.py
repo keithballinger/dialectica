@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from pathlib import Path
+from typing import Optional, Callable
 from .base import DryRunProvider, Provider
 from ..errors import ProviderError
 from ..utils import is_dry_run
@@ -78,6 +80,60 @@ class GPT5Provider:
             raise ProviderError("openai package not installed. Run: pip install openai") from e
         except Exception as e:  # pragma: no cover
             raise ProviderError(f"GPT5 JSON schema API error: {e}") from e
+
+    def stream_complete(self, prompt: str, on_delta: Optional[Callable[[str], None]] = None) -> str:
+        """Stream completion with GPT-5 using the responses API"""
+        if is_dry_run():
+            return self._dry.complete(prompt)
+
+        api_key = os.getenv("OPENAI_API_KEY") or os.getenv("GPT5_API_KEY")
+        if not api_key:
+            raise ProviderError("Missing OPENAI_API_KEY for GPT5 provider. Set it in .env.")
+
+        try:
+            from openai import OpenAI  # type: ignore
+
+            client = OpenAI(api_key=api_key)
+            full_text = []
+
+            with client.responses.stream(
+                model=self.model,
+                input=[{"role": "user", "content": [{"type": "input_text", "text": prompt}]}],
+            ) as stream:
+                for event in stream:
+                    if event.type == "response.output_text.delta":
+                        delta = event.delta
+                        full_text.append(delta)
+                        if on_delta:
+                            on_delta(delta)
+
+                    elif event.type == "response.refusal.delta":
+                        # Model refused to generate
+                        raise ProviderError(f"Model refused: {event.delta}")
+
+                    elif event.type == "response.error":
+                        raise ProviderError(f"Stream error: {event.error}")
+
+                    elif event.type == "response.completed":
+                        pass  # Stream completed successfully
+
+                    else:
+                        # Unknown / future event types
+                        pass
+
+                # Get final response
+                final = stream.get_final_response()
+                if final and hasattr(final, 'output_text'):
+                    return final.output_text
+
+                return "".join(full_text)
+
+        except ImportError as e:
+            raise ProviderError("openai package not installed. Run: pip install openai") from e
+        except ProviderError:
+            raise  # Re-raise our own errors
+        except Exception as e:  # pragma: no cover
+            raise ProviderError(f"GPT5 streaming error: {e}") from e
 
 
 def get_provider() -> Provider:

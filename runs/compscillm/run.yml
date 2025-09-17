@@ -1,0 +1,8 @@
+field: compsci
+prompts:
+  pack: domain_compsci
+constraints:
+  files:
+    - constraints/compscillm_constraints.json
+  format: json
+criteria_file:

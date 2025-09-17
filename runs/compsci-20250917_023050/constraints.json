@@ -1,0 +1,6 @@
+{
+  "overview": "Small LLMs.",
+  "constraints": {
+    "testable": "can validate with code"
+  }
+}

@@ -1,0 +1,453 @@
+=== PROMPT ===
+You are a creative scientific researcher. Be direct and concise.
+
+        Task: Propose EXACTLY 10 ideas (no more, no less) for novel, falsifiable scientific theories that satisfy the constraints.
+        Field: compsci
+
+        Constraints of Paper:
+        {
+  "overview": "Research into using small LLMs for agentic coding",
+  "constraints": {
+    "testable": "Can validate with code"
+  }
+}
+
+
+        IMPORTANT: You must provide EXACTLY 10 ideas numbered 1 through 10. Stop after idea 10.
+
+        Output format for each of the 10 ideas:
+
+        1) <Concise Title>
+        Summary: <one concise sentence>
+        For a smart layperson: <2–3 sentences explaining the idea accessibly>
+        Falsification: <1–3 sentences with concrete steps>
+        Novelty: <one sentence on why this is new>
+
+        2) ... (repeat for ideas 2 through 10)
+
+        STOP after idea 10. Do not provide more than 10 ideas.
+
+=== STREAMING ===
+1) Test
+Detected idea 1 - showing placeholder
+
+=== DISPLAY UPDATE ===
+Idea 1: Loading...
+  Summary: 
+-First Autocurriculum for Small LLM Agents
+Summary:
+Updated idea 1 with title: Test-First Autocurriculum for Small LLM Agents...
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: 
+ Having a small LLM write executable tests before code increases task success and reduces iterations compared to code-first prompting.
+For a smart layperson: Instead of writing the program first, the model writes tests that describe how the program should behave, then writes code to pass those tests. This gives the model a clear target and instant feedback. It’s like sketching a checklist before building.
+Falsification: Compare code-first vs test-first agents using the same 1–7B model, tools, and time on MBPP/HumanEval/SWE-bench-lite; measure pass@1, iterations-to-pass, and wall-clock. If test-first does not significantly outperform code-first at fixed compute, the theory is false.
+Novelty: Applies a strict test-first loop as an agentic control policy specifically for small LLMs and quantifies its impact versus code-first baselines.
+
+2) Compiler
+Detected idea 2 - showing placeholder
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: 
+Idea 2: Loading...
+  Summary: 
+-Trace-Augmented Retrieval Amplifies Small-Model Repair
+Summary:
+Updated idea 2 with title: Compiler-Trace-Augmented Retrieval Amplifies Small...
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: 
+Idea 2: Compiler-Trace-Augmented Retrieval Amplifies Small
+  Summary: 
+ Feeding parsed compiler and runtime traces into retrieval to fetch targeted examples/docs disproportionately improves bug repair in small LLMs.
+For a smart layperson: When code breaks, the error message points to what went wrong; using that message to search examples helps fix it faster. Small models benefit more because they rely heavily on concrete cues. It’s like giving them a map to the fix.
+Falsification: Build an agent that captures stack/compile traces and uses them as retrieval queries versus an embedding-only retriever; compare fix rate and attempts on coding bugs. If small models do not gain more than large models or no gain exists, the theory is false.
+Novelty: Isolates and tests the interaction effect between trace-aware retrieval and model size in agentic coding.
+
+3) External
+Detected idea 3 - showing placeholder
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: 
+Idea 2: Compiler-Trace-Augmented Retrieval Amplifies Small
+  Summary: 
+Idea 3: Loading...
+  Summary: 
+ Symbolic State Compression Enables Long-Horizon Coding
+Summary:
+Updated idea 3 with title: External Symbolic State Compression Enables Long-H...
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: 
+Idea 2: Compiler-Trace-Augmented Retrieval Amplifies Small
+  Summary: 
+Idea 3: External Symbolic State Compression Enables Long-H
+  Summary: 
+ Maintaining a compact external task state (plan graph, open TODOs, symbol table) reduces context load and boosts multi-step success for small LLM agents.
+For a smart layperson: Instead of remembering everything in conversation, the agent keeps a short, structured checklist and map of the code. This frees mental space so it can focus on the next step. Think of it as a project board the model reads and writes.
+Falsification: Compare agents with full-chat-history vs compressed-state memory on multi-file repo tasks; measure success, tokens used, and error regressions. If compressed-state does not improve success or reduce context without loss, the theory is false.
+Novelty: Proposes and tests a specific symbolic state interface tailored to small models’ limited context and working memory.
+
+4) Type
+Detected idea 4 - showing placeholder
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: 
+Idea 2: Compiler-Trace-Augmented Retrieval Amplifies Small
+  Summary: 
+Idea 3: External Symbolic State Compression Enables Long-H
+  Summary: 
+Idea 4: Loading...
+  Summary: 
+-First Program Sketching Improves Small-Model Correctness
+Summary:
+Updated idea 4 with title: Type-First Program Sketching Improves Small-Model ...
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: 
+Idea 2: Compiler-Trace-Augmented Retrieval Amplifies Small
+  Summary: 
+Idea 3: External Symbolic State Compression Enables Long-H
+  Summary: 
+Idea 4: Type-First Program Sketching Improves Small-Model 
+  Summary: 
+ For typed languages, forcing small LLMs to propose types and function signatures before implementation increases compile and correctness rates.
+For a smart layperson: The agent first declares the shapes of things—inputs, outputs, and interfaces—so the compiler can catch mistakes early. Then it fills in the details. It’s like framing a house before installing furniture.
+Falsification: On Java/TypeScript/Rust tasks, compare “typed-sketch→implement” vs direct generation; track compile rate, pass@1, and edits-to-pass. If the typed-sketch pipeline fails to outperform under equal budgets, the theory is false.
+Novelty: Systematically enforces a type-first sketching stage as an agent control law and quantifies its effect for small LLMs.
+
+5) Tool
+Detected idea 5 - showing placeholder
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: 
+Idea 2: Compiler-Trace-Augmented Retrieval Amplifies Small
+  Summary: 
+Idea 3: External Symbolic State Compression Enables Long-H
+  Summary: 
+Idea 4: Type-First Program Sketching Improves Small-Model 
+  Summary: 
+Idea 5: Loading...
+  Summary: 
+ Portfolio Size is Non-Monotonic for Small LLM Agents
+Summary:
+Updated idea 5 with title: Tool Portfolio Size is Non-Monotonic for Small LLM...
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: 
+Idea 2: Compiler-Trace-Augmented Retrieval Amplifies Small
+  Summary: 
+Idea 3: External Symbolic State Compression Enables Long-H
+  Summary: 
+Idea 4: Type-First Program Sketching Improves Small-Model 
+  Summary: 
+Idea 5: Tool Portfolio Size is Non-Monotonic for Small LLM
+  Summary: 
+ There exists an optimal intermediate number of coding tools; adding more beyond this point reduces small-model performance due to tool-selection noise.
+For a smart layperson: Giving too many tools can confuse a small model; it wastes time picking rather than building. There’s a sweet spot where it has enough options without getting lost.
+Falsification: Vary accessible tools (e.g., docs search, tests, static analyzer, linter, REPL, profiler) from 1 to N and measure success/time on standardized tasks; fit performance vs N. If performance does not peak and then drop, the theory is false.
+Novelty: Predicts and tests a U-shaped performance curve tied to tool cardinality for small agentic coders.
+
+6) Execution
+Detected idea 6 - showing placeholder
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: 
+Idea 2: Compiler-Trace-Augmented Retrieval Amplifies Small
+  Summary: 
+Idea 3: External Symbolic State Compression Enables Long-H
+  Summary: 
+Idea 4: Type-First Program Sketching Improves Small-Model 
+  Summary: 
+Idea 5: Tool Portfolio Size is Non-Monotonic for Small LLM
+  Summary: 
+Idea 6: Loading...
+  Summary: 
+-Guided Self-Consistency Outperforms Majority Vote
+Summary:
+Updated idea 6 with title: Execution-Guided Self-Consistency Outperforms Majo...
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: 
+Idea 2: Compiler-Trace-Augmented Retrieval Amplifies Small
+  Summary: 
+Idea 3: External Symbolic State Compression Enables Long-H
+  Summary: 
+Idea 4: Type-First Program Sketching Improves Small-Model 
+  Summary: 
+Idea 5: Tool Portfolio Size is Non-Monotonic for Small LLM
+  Summary: 
+Idea 6: Execution-Guided Self-Consistency Outperforms Majo
+  Summary: 
+ Selecting from multiple small-LLM code samples via execution-based scores beats simple majority voting on text outputs.
+For a smart layperson: Generate several candidate solutions, run them, and keep the one that actually works—rather than the one most often written. Code can be checked by running tests, which is more reliable than counting opinions.
+Falsification: For k-sample decoding, compare pass@k under (a) majority-vote on text and (b) selecting the sample with best test coverage/partial pass; if (b) does not significantly exceed (a), the theory is false.
+Novelty: Frames execution as the selection metric within self-consistency specifically for small models and proves superiority over text-only voting.
+
+7) Counter
+Detected idea 7 - showing placeholder
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: 
+Idea 2: Compiler-Trace-Augmented Retrieval Amplifies Small
+  Summary: 
+Idea 3: External Symbolic State Compression Enables Long-H
+  Summary: 
+Idea 4: Type-First Program Sketching Improves Small-Model 
+  Summary: 
+Idea 5: Tool Portfolio Size is Non-Monotonic for Small LLM
+  Summary: 
+Idea 6: Execution-Guided Self-Consistency Outperforms Majo
+  Summary: 
+Idea 7: Loading...
+  Summary: 
+example-Guided Repair with SMT Disproportionately Helps Small Models
+Summary:
+Updated idea 7 with title: Counterexample-Guided Repair with SMT Disproportio...
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: 
+Idea 2: Compiler-Trace-Augmented Retrieval Amplifies Small
+  Summary: 
+Idea 3: External Symbolic State Compression Enables Long-H
+  Summary: 
+Idea 4: Type-First Program Sketching Improves Small-Model 
+  Summary: 
+Idea 5: Tool Portfolio Size is Non-Monotonic for Small LLM
+  Summary: 
+Idea 6: Execution-Guided Self-Consistency Outperforms Majo
+  Summary: 
+Idea 7: Counterexample-Guided Repair with SMT Disproportio
+  Summary: 
+ Integrating an SMT solver to produce minimal counterexamples drives faster, higher repair rates in small LLM agents than random test mutation.
+For a smart layperson: A logical solver finds the simplest way your code is wrong and shows it to the model. With clear, targeted failures, the model fixes bugs faster. It’s like getting an exact failing recipe step.
+Falsification: Build two repair agents—SMT-guided vs fuzz-guided—on algorithmic bug suites; compare fixes/hour and attempts-to-fix. If SMT guidance doesn’t yield larger gains for small models, the theory is false.
+Novelty: Tests counterexample-guided inductive repair as a control signal uniquely for small LLM coding agents.
+
+8) Static
+Detected idea 8 - showing placeholder
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: 
+Idea 2: Compiler-Trace-Augmented Retrieval Amplifies Small
+  Summary: 
+Idea 3: External Symbolic State Compression Enables Long-H
+  Summary: 
+Idea 4: Type-First Program Sketching Improves Small-Model 
+  Summary: 
+Idea 5: Tool Portfolio Size is Non-Monotonic for Small LLM
+  Summary: 
+Idea 6: Execution-Guided Self-Consistency Outperforms Majo
+  Summary: 
+Idea 7: Counterexample-Guided Repair with SMT Disproportio
+  Summary: 
+Idea 8: Loading...
+  Summary: 
+-Analysis-Guided Retrieval Beats Embeddings for Large Repos
+Summary:
+Updated idea 8 with title: Static-Analysis-Guided Retrieval Beats Embeddings ...
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: 
+Idea 2: Compiler-Trace-Augmented Retrieval Amplifies Small
+  Summary: 
+Idea 3: External Symbolic State Compression Enables Long-H
+  Summary: 
+Idea 4: Type-First Program Sketching Improves Small-Model 
+  Summary: 
+Idea 5: Tool Portfolio Size is Non-Monotonic for Small LLM
+  Summary: 
+Idea 6: Execution-Guided Self-Consistency Outperforms Majo
+  Summary: 
+Idea 7: Counterexample-Guided Repair with SMT Disproportio
+  Summary: 
+Idea 8: Static-Analysis-Guided Retrieval Beats Embeddings 
+  Summary: 
+ Retrieving context using call graphs, types, and ownership edges outperforms embedding-only retrieval for small LLM agents working in big codebases.
+For a smart layperson: Instead of searching by word similarity, the agent uses the code’s structure—who calls what and with which types—to find the right files. Structural maps are clearer than vague text matches for small models.
+Falsification: Implement static-analysis retriever vs embedding retriever on SWE-bench-style tasks; compare success@k and time. If structural retrieval does not outperform embeddings for small models, the theory is false.
+Novelty: Positions static program structure as the primary retrieval signal for small agentic coders and validates it empirically.
+
+9) Error
+Detected idea 9 - showing placeholder
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: 
+Idea 2: Compiler-Trace-Augmented Retrieval Amplifies Small
+  Summary: 
+Idea 3: External Symbolic State Compression Enables Long-H
+  Summary: 
+Idea 4: Type-First Program Sketching Improves Small-Model 
+  Summary: 
+Idea 5: Tool Portfolio Size is Non-Monotonic for Small LLM
+  Summary: 
+Idea 6: Execution-Guided Self-Consistency Outperforms Majo
+  Summary: 
+Idea 7: Counterexample-Guided Repair with SMT Disproportio
+  Summary: 
+Idea 8: Static-Analysis-Guided Retrieval Beats Embeddings 
+  Summary: 
+Idea 9: Loading...
+  Summary: 
+-Taxonomy Reflection Reduces Retries in Small LLM Repair Loops
+Summary:
+Updated idea 9 with title: Error-Taxonomy Reflection Reduces Retries in Small...
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: 
+Idea 2: Compiler-Trace-Augmented Retrieval Amplifies Small
+  Summary: 
+Idea 3: External Symbolic State Compression Enables Long-H
+  Summary: 
+Idea 4: Type-First Program Sketching Improves Small-Model 
+  Summary: 
+Idea 5: Tool Portfolio Size is Non-Monotonic for Small LLM
+  Summary: 
+Idea 6: Execution-Guided Self-Consistency Outperforms Majo
+  Summary: 
+Idea 7: Counterexample-Guided Repair with SMT Disproportio
+  Summary: 
+Idea 8: Static-Analysis-Guided Retrieval Beats Embeddings 
+  Summary: 
+Idea 9: Error-Taxonomy Reflection Reduces Retries in Small
+  Summary: 
+ Forcing the agent to classify failures into a fixed error taxonomy before retrying decreases iterations and increases fix rate.
+For a smart layperson: After a failure, the model must name the kind of mistake—like “off-by-one” or “null pointer”—before trying again. Labeling the error focuses its next attempt. It’s like diagnosing before treating.
+Falsification: Compare a repair agent with taxonomy reflection vs generic “think step-by-step” reflection; measure retries-to-pass and final pass rates. If taxonomy doesn’t improve metrics, the theory is false.
+Novelty: Introduces a structured self-diagnosis step tied to a fixed coding error taxonomy for small models.
+
+10) Depth
+Detected idea 10 - showing placeholder
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: 
+Idea 2: Compiler-Trace-Augmented Retrieval Amplifies Small
+  Summary: 
+Idea 3: External Symbolic State Compression Enables Long-H
+  Summary: 
+Idea 4: Type-First Program Sketching Improves Small-Model 
+  Summary: 
+Idea 5: Tool Portfolio Size is Non-Monotonic for Small LLM
+  Summary: 
+Idea 6: Execution-Guided Self-Consistency Outperforms Majo
+  Summary: 
+Idea 7: Counterexample-Guided Repair with SMT Disproportio
+  Summary: 
+Idea 8: Static-Analysis-Guided Retrieval Beats Embeddings 
+  Summary: 
+Idea 9: Error-Taxonomy Reflection Reduces Retries in Small
+  Summary: 
+Idea 10: Loading...
+  Summary: 
+-First Program Search with a Lightweight Learned Critic Beats Breadth-First
+Summary:
+Updated idea 10 with title: Depth-First Program Search with a Lightweight Lear...
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: 
+Idea 2: Compiler-Trace-Augmented Retrieval Amplifies Small
+  Summary: 
+Idea 3: External Symbolic State Compression Enables Long-H
+  Summary: 
+Idea 4: Type-First Program Sketching Improves Small-Model 
+  Summary: 
+Idea 5: Tool Portfolio Size is Non-Monotonic for Small LLM
+  Summary: 
+Idea 6: Execution-Guided Self-Consistency Outperforms Majo
+  Summary: 
+Idea 7: Counterexample-Guided Repair with SMT Disproportio
+  Summary: 
+Idea 8: Static-Analysis-Guided Retrieval Beats Embeddings 
+  Summary: 
+Idea 9: Error-Taxonomy Reflection Reduces Retries in Small
+  Summary: 
+Idea 10: Depth-First Program Search with a Lightweight Lear
+  Summary: 
+ A resource-bounded depth-first search guided by a small value model over partial programs outperforms breadth-first or random exploration for small LLM agents.
+For a smart layperson: The agent explores one idea deeply, using a tiny helper to predict which partial solutions look promising, rather than skimming many shallow ideas. This saves effort and finds working code sooner.
+Falsification: Train a shallow critic from execution traces; compare DFS+critic vs BFS, random, and unguided DFS on synthesis/repair tasks under equal compute; if no significant gain, the theory is false.
+Novelty: Couples depth-first control with a minimal learned evaluator to optimize search specifically for small LLM coding agents.
+=== PARSING FULL IDEAS ===
+Total text length: 8161
+Updated idea 1 with details
+  Title: Test-First Autocurriculum for Small LLM Agents...
+  Summary: Having a small LLM write executable tests before code increases task success and reduces iterations ...
+  Layperson: Instead of writing the program first, the model writes tests that describe how the program should be...
+Updated idea 2 with details
+  Title: Compiler-Trace-Augmented Retrieval Amplifies Small...
+  Summary: Feeding parsed compiler and runtime traces into retrieval to fetch targeted examples/docs disproport...
+  Layperson: When code breaks, the error message points to what went wrong; using that message to search examples...
+Updated idea 3 with details
+  Title: External Symbolic State Compression Enables Long-H...
+  Summary: Maintaining a compact external task state (plan graph, open TODOs, symbol table) reduces context loa...
+  Layperson: Instead of remembering everything in conversation, the agent keeps a short, structured checklist and...
+Updated idea 4 with details
+  Title: Type-First Program Sketching Improves Small-Model ...
+  Summary: For typed languages, forcing small LLMs to propose types and function signatures before implementati...
+  Layperson: The agent first declares the shapes of things—inputs, outputs, and interfaces—so the compiler can ca...
+Updated idea 5 with details
+  Title: Tool Portfolio Size is Non-Monotonic for Small LLM...
+  Summary: There exists an optimal intermediate number of coding tools; adding more beyond this point reduces s...
+  Layperson: Giving too many tools can confuse a small model; it wastes time picking rather than building. There’...
+Updated idea 6 with details
+  Title: Execution-Guided Self-Consistency Outperforms Majo...
+  Summary: Selecting from multiple small-LLM code samples via execution-based scores beats simple majority voti...
+  Layperson: Generate several candidate solutions, run them, and keep the one that actually works—rather than the...
+Updated idea 7 with details
+  Title: Counterexample-Guided Repair with SMT Disproportio...
+  Summary: Integrating an SMT solver to produce minimal counterexamples drives faster, higher repair rates in s...
+  Layperson: A logical solver finds the simplest way your code is wrong and shows it to the model. With clear, ta...
+Updated idea 8 with details
+  Title: Static-Analysis-Guided Retrieval Beats Embeddings ...
+  Summary: Retrieving context using call graphs, types, and ownership edges outperforms embedding-only retrieva...
+  Layperson: Instead of searching by word similarity, the agent uses the code’s structure—who calls what and with...
+Updated idea 9 with details
+  Title: Error-Taxonomy Reflection Reduces Retries in Small...
+  Summary: Forcing the agent to classify failures into a fixed error taxonomy before retrying decreases iterati...
+  Layperson: After a failure, the model must name the kind of mistake—like “off-by-one” or “null pointer”—before ...
+Updated idea 10 with details
+  Title: Depth-First Program Search with a Lightweight Lear...
+  Summary: A resource-bounded depth-first search guided by a small value model over partial programs outperform...
+  Layperson: The agent explores one idea deeply, using a tiny helper to predict which partial solutions look prom...
+
+=== DISPLAY UPDATE ===
+Idea 1: Test-First Autocurriculum for Small LLM Agents
+  Summary: Having a small LLM write executable tests before code increases task success and reduces iterations 
+Idea 2: Compiler-Trace-Augmented Retrieval Amplifies Small
+  Summary: Feeding parsed compiler and runtime traces into retrieval to fetch targeted examples/docs disproport
+Idea 3: External Symbolic State Compression Enables Long-H
+  Summary: Maintaining a compact external task state (plan graph, open TODOs, symbol table) reduces context loa
+Idea 4: Type-First Program Sketching Improves Small-Model 
+  Summary: For typed languages, forcing small LLMs to propose types and function signatures before implementati
+Idea 5: Tool Portfolio Size is Non-Monotonic for Small LLM
+  Summary: There exists an optimal intermediate number of coding tools; adding more beyond this point reduces s
+Idea 6: Execution-Guided Self-Consistency Outperforms Majo
+  Summary: Selecting from multiple small-LLM code samples via execution-based scores beats simple majority voti
+Idea 7: Counterexample-Guided Repair with SMT Disproportio
+  Summary: Integrating an SMT solver to produce minimal counterexamples drives faster, higher repair rates in s
+Idea 8: Static-Analysis-Guided Retrieval Beats Embeddings 
+  Summary: Retrieving context using call graphs, types, and ownership edges outperforms embedding-only retrieva
+Idea 9: Error-Taxonomy Reflection Reduces Retries in Small
+  Summary: Forcing the agent to classify failures into a fixed error taxonomy before retrying decreases iterati
+Idea 10: Depth-First Program Search with a Lightweight Lear
+  Summary: A resource-bounded depth-first search guided by a small value model over partial programs outperform

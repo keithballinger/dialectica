@@ -1,0 +1,89 @@
+=== PROMPT ===
+You are a creative scientific researcher. Be direct and concise.
+
+        Task: Propose EXACTLY 10 ideas (no more, no less) for novel, falsifiable scientific theories that satisfy the constraints.
+        Field: compsci
+
+        Constraints of Paper:
+        {
+  "overview": "Research into using small LLMs for agentic coding",
+  "constraints": {
+    "testable": "Can validate with code"
+  }
+}
+
+
+        IMPORTANT: You must provide EXACTLY 10 ideas numbered 1 through 10. Stop after idea 10.
+
+        Output format for each of the 10 ideas:
+
+        1) <Concise Title>
+        Summary: <one concise sentence>
+        For a smart layperson: <2–3 sentences explaining the idea accessibly>
+        Falsification: <1–3 sentences with concrete steps>
+        Novelty: <one sentence on why this is new>
+
+        2) ... (repeat for ideas 2 through 10)
+
+        STOP after idea 10. Do not provide more than 10 ideas.
+
+=== STREAMING ===
+1) DAG-Curriculum Planning for Small Code Agents
+Summary: Training and prompting small LLMs with a directed-acyclic-graph (DAG) curriculum of code tasks yields superior multi-step coding performance versus shuffled curricula.
+For a smart layperson: Instead of learning randomly, the model practices tasks in a sensible order from easy building blocks to complex projects. This mirrors how people learn programming and should help the model plan better across steps. The idea is that structure in learning produces structure in thinking.
+Falsification: Implement two fine-tuning regimes for a ≤7B model on identical data: (a) DAG-ordered and (b) randomly shuffled. Evaluate agent performance on repo-level tasks (e.g., SWE-bench, RepoGym) under equal token/computation budgets; if (a) does not significantly outperform (b) in task success rates, the theory is falsified.
+Novelty: Prior work uses curricula, but a formal task-dependency DAG aligned to agent planning for small LLM coding has not been systematically tested.
+
+2) Minimal Tool Portfolio Sufficiency Hypothesis
+Summary: A small LLM with a constrained 5-tool set (read/write, search, run tests, static analysis, patch) matches or exceeds performance of the same model with a larger toolset.
+For a smart layperson: More tools can confuse a small model; fewer, well-chosen tools can make decisions clearer. Like giving a novice just the right instruments, not a cluttered toolbox. The claim is that minimal, canonical tools are enough for strong results.
+Falsification: Build two agents with a ≤7B model: one with the 5 canonical tools and one with ≥15 diverse tools; run identical tasks and budgets on SWE-bench-lite and HumanEvalFix. If the larger toolset does not reduce error or increases success, the hypothesis is false.
+Novelty: Empirically testing tool-minimality for agentic coding with small LLMs under controlled budgets is unexplored.
+
+3) AST-Diff Episodic Memory Beats Longer Context
+Summary: For small LLM coding agents, a compact episodic memory of AST diffs retrieved by function-level anchors improves multi-step repair more than increasing context length.
+For a smart layperson: Instead of remembering everything, the agent stores concise summaries of code changes (like a changelog of what mattered). This focused memory should be more helpful than just giving the model more text to read. It’s efficient memory over brute-force memory.
+Falsification: Compare three variants of the same ≤7B agent on repo repair tasks: (a) base 8k context, (b) 32k context, and (c) 8k context + AST-diff memory retrieval. If (c) does not significantly outperform (b) on task success under equal compute, the theory fails.
+Novelty: Directly pitting structured AST-diff memory against raw context scaling for small models in closed-loop coding is new.
+
+4) Verification-in-the-Loop Outperforms Self-Consistency for Small Models
+Summary: Integrating unit tests and lightweight symbolic execution during agent loops beats self-consistency sampling for small LLMs on code correctness.
+For a smart layperson: Rather than asking the model to try many guesses and vote, we check each guess with tests and simple program reasoning tools. This should guide the model to fix mistakes more reliably. It’s systematic checking versus hoping more guesses help.
+Falsification: Implement two agents with a ≤7B model: (a) self-consistency (N samples) and (b) verification-in-the-loop (run tests + KLEE/pySym/pytest + auto-fix). On HumanEval+ and MBPP with tests, if (b) doesn’t achieve higher pass@1/pass@k at equal tokens, the claim is false.
+Novelty: A rigorous head-to-head under matched budgets for small LLMs with symbolic-check augmentation is underexplored.
+
+5) Role-Alternation Emergent Debugging
+Summary: Alternating Critic and Executor roles between two identical small LLM instances yields better bug-fixing than either instance alone or simultaneous collaboration.
+For a smart layperson: Two copies of the same small model take turns: one writes code, the other critiques and plans the next fix. Turn-taking forces clearer thinking and reduces confusion. It’s pair programming with strict roles.
+Falsification: Evaluate three setups on bug-fix benchmarks (QuixBugs, HumanEvalFix) with ≤7B models: (a) single agent, (b) simultaneous two-agent chat, and (c) strict turn-based role alternation with explicit handoff artifacts. If (c) doesn’t outperform (a) and (b) under equal budgets, the theory is falsified.
+Novelty: The specific alternation protocol with enforced artifacts for small LLM agents has not been isolated and tested.
+
+6) Issue-Graph Grounding Improves Long-Horizon Repo Tasks
+Summary: Grounding agent plans in an explicit issue/dependency graph of a codebase increases reliability on multi-file tasks for small LLMs.
+For a smart layperson: The agent links each step to an item in an issue graph (like a to-do list with dependencies). This structure helps it avoid getting lost in large projects. It’s a map for navigating big code changes.
+Falsification: Build two ≤7B agents for repo tasks: (a) vanilla planner and (b) planner that must reference and update an issue/dependency graph per step; compare success on RepoQA and SWE-bench Verified with equal tokens. If (b) does not improve completion and reduces error regressions, the hypothesis fails.
+Novelty: Explicit graph-anchored planning as a control variable for small model repo agents is novel.
+
+7) IR-First Synthesis for Small Models
+Summary: Having a small LLM synthesize intermediate representation (e.g., WASM or typed pseudocode) before emitting source code improves correctness vs. direct source generation.
+For a smart layperson: The model writes a lower-level, precise plan (like bytecode or strict pseudocode) first, then translates it to readable code. This reduces ambiguity and mistakes. It’s drafting blueprints before building.
+Falsification: Implement two pipelines with a ≤7B model on HumanEval and LeetCode-hard-with-tests: (a) direct code and (b) IR-first (IR validated by interpreter, then lifted). If (b) doesn’t yield higher pass@1 or fewer runtime errors at equal compute, the theory is false.
+Novelty: Systematically enforcing IR-first program synthesis with validation for small LLM agents is largely untested.
+
+8) Failure Replay Drives Durable Agentic Skills Without RLHF
+Summary: A failure-replay buffer of hard negatives and counterexamples, used in supervised fine-tuning of small LLM agents, yields persistent gains comparable to RLHF.
+For a smart layperson: The agent learns most from its mistakes; we store and reuse the trickiest failures and their fixes to teach it. This may achieve similar benefits to reinforcement learning but cheaper and simpler. It’s targeted practice on past errors.
+Falsification: Create three training regimes for a ≤7B model: (a) baseline SFT, (b) SFT + failure replay buffer, and (c) SFT + RLHF; test on unseen coding tasks with identical inference budgets. If (b) doesn’t close ≥80% of the gap to (c) on success rates, the hypothesis is rejected.
+Novelty: A controlled comparison of failure-replay SFT versus RLHF specifically for agentic coding in small LLMs is new.
+
+9) Deterministic Micro-Search Beats Stochastic Exploration
+Summary: A bounded, deterministic search over tool choices guided by static analysis outperforms stochastic sampling for small LLM code agents under the same token budget.
+For a smart layperson: Instead of random tries, the agent uses a small, systematic search that checks code with static tools at each step. This makes better use of limited brainpower. It’s careful, small branching rather than guesswork.
+Falsification: Compare (a) temperature>0, multi-sample agents and (b) deterministic micro-BFS over actions gated by flake8/mypy/pytest signals with a ≤7B model on repo repair tasks. If (b) doesn’t exceed (a) in success per token, the theory fails.
+Novelty: Evaluating deterministic, analysis-gated action search as a primary exploration strategy for small LLM agents is novel.
+
+10) Cooperative Sketch Swarm with Hole-Filling Compilers
+Summary: Multiple small LLMs producing complementary program sketches, combined by a hole-filling compiler, match or beat a single larger model on coding tasks.
+For a smart layperson: Several small models propose high-level code outlines; a tool merges them and fills in missing pieces automatically. The group’s ideas can rival a bigger, more expensive model. It’s a team drafting a plan that a compiler completes.
+Falsification: Build a swarm of N ≤7B models that output partial sketches with constraints, combined via a sketch-to-code synthesizer (e.g., Rosette/Sketch); compare against a single ≥13B model on HumanEval and SWE-bench-lite at equal total tokens/compute. If the swarm doesn’t meet or exceed larger-model performance, the claim is false.
+Novelty: Coordinating small LLM sketching with constraint-based hole filling as a competitiveness strategy is largely unexplored.

@@ -1,0 +1,5 @@
+constraints: constraints/compsciauto_constraints.json
+domain: domain_compsci
+field: compsci
+name: compsciauto
+phase: kickoff

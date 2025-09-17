@@ -35,25 +35,27 @@ def compose_kickoff_prompt(constraints_text: str) -> str:
 def compose_ideas_prompt(constraints_text: str, field: str = "general") -> str:
     return dedent(
         f"""
-        {SYSTEM_GUIDANCE}
+        You are a creative scientific researcher. Be direct and concise.
 
-        Task: Propose 10 ideas for novel, falsifiable scientific theories that satisfy the constraints.
+        Task: Propose EXACTLY 10 ideas (no more, no less) for novel, falsifiable scientific theories that satisfy the constraints.
         Field: {field}
 
         Constraints of Paper:
         {constraints_text}
 
-        Output format: EXACTLY 10 blocks in this format, no extra commentary:
-        
+        IMPORTANT: You must provide EXACTLY 10 ideas numbered 1 through 10. Stop after idea 10.
+
+        Output format for each of the 10 ideas:
+
         1) <Concise Title>
         Summary: <one concise sentence>
         For a smart layperson: <2–3 sentences explaining the idea accessibly>
         Falsification: <1–3 sentences with concrete steps>
         Novelty: <one sentence on why this is new>
 
-        2) ... (repeat for 2 through 10)
-        
-        Use plain Markdown lines exactly as shown above.
+        2) ... (repeat for ideas 2 through 10)
+
+        STOP after idea 10. Do not provide more than 10 ideas.
         """
     ).strip()
 

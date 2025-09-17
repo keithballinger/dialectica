@@ -1,0 +1,94 @@
+{
+  "ideas": [
+    {
+      "index": 1,
+      "title": "A Single Residual-Stream Direction Explains Safety RLHF",
+      "summary": "Safety fine-tuning acts like adding one dominant vector in the residual stream that shifts outputs toward refusals and safe phrasing.",
+      "layperson": "When models are made safer, we claim most of the change can be described as pushing their internal representations in a single direction. If you identify and remove that direction, the model should behave much more like the original unsafeguarded version. This would mean safety tuning is simpler than it looks internally.",
+      "falsification": "Compare a base model (e.g., Llama-3-8B) and its safety-tuned variant. Learn a single residual-stream direction v that best separates hidden states (linear probe/PCA on differences), subtract αv during inference on safe prompts, and measure recovery of base behavior by KL divergence and refusal rates; failure to recover ≥70% of the KL gap and bring refusal rates within 10% of base falsifies the theory.",
+      "ibm_cost_plan": "Implementation: PyTorch + Hugging Face; extract hidden states from several layers on matched prompts, learn v via logistic regression or PCA, apply test-time intervention; Benchmarks: harmlessness/helpfulness subsets from Anthropic HH, OpenAI Safety Spec test, and general tasks (MMLU) to verify non-safety behavior; Measurement: KL(base||intervened), refusal rate, task accuracy; Cost: 1×A100 80GB for ≈8–12 GPU-hours (~$20–$40 at $2–$3/hr); Storage/IO minimal.",
+      "novelty": "It posits a one-dimensional causal mechanism for safety RLHF effects, not just linear separability, and tests reversibility via a single vector intervention."
+    },
+    {
+      "index": 2,
+      "title": "Head Concentration Predicts Out-of-Domain Robustness",
+      "summary": "Models whose predictions depend on fewer, more concentrated attention heads generalize better to out-of-domain data.",
+      "layperson": "Inside a language model, many attention heads contribute to a prediction, but sometimes only a few matter most. We propose that when just a small set of heads carries most of the load, the model handles unfamiliar situations better. This gives a simple internal marker to predict robustness.",
+      "falsification": "Compute per-head causal contributions via attention head patching/ablation on in-domain validation, quantify concentration (e.g., top-10 heads’ share of logit change), and correlate with out-of-domain accuracy across tasks/models; Pearson r must be ≥0.6 across ≥5 tasks (e.g., MMLU→MMMU, GSM8K→SVAMP) or the theory is falsified.",
+      "ibm_cost_plan": "Implementation: Implement head ablations/patching with TransformerLens or custom hooks; Benchmarks: GSM8K/SVAMP, MMLU/MMMU, TriviaQA/NQ; Models: Mistral-7B, Llama-3-8B-Instruct, Qwen2-7B; Measurement: head concentration index, OOD accuracy, correlation with bootstrap CIs; Cost: 1–2×A100 80GB, ≈15 GPU-hours total (~$30–$45).",
+      "novelty": "It predicts a quantitative link between interpretable head concentration and OOD robustness, not just performance correlations across datasets."
+    },
+    {
+      "index": 3,
+      "title": "Sparse Belief Neurons Control Instruction Behaviors",
+      "summary": "A tiny fraction (≤0.1%) of MLP neurons encodes instruction-following beliefs such that masking them flips specific behaviors with minimal collateral damage.",
+      "layperson": "We claim only a very small set of internal switches decide whether a model follows instructions like refusing unsafe requests or using a certain style. Turning off just those switches should change that one behavior without breaking unrelated skills. This would make targeted editing practical.",
+      "falsification": "Identify neurons via gradient attribution from behavior-specific losses, mask top-k (k ≤ 0.1% of neurons), and test whether the target behavior flips while unrelated benchmarks drop by <1% accuracy; if no such k exists across at least two behaviors (e.g., refusal style, step-by-step reasoning), the theory is falsified.",
+      "ibm_cost_plan": "Implementation: Hook MLP activations, compute per-neuron saliency from supervised heads on labeled behavior data, apply runtime masking; Benchmarks: refusal datasets (AdvBench-safe), style datasets (Alpaca variations), plus GSM8K/MMLU sanity checks; Models: Llama-3-8B-Instruct, Mistral-7B-Instruct; Measurement: targeted behavior flip rate, off-target accuracy delta; Cost: 1×A100 80GB, ≈12 GPU-hours (~$24–$36).",
+      "novelty": "It asserts extreme sparsity and causal editability of instruction-following behaviors via neuron-level interventions with quantitative bounds."
+    },
+    {
+      "index": 4,
+      "title": "RAG Acts as KL Regularization Against Hallucination",
+      "summary": "Retrieval reduces hallucinations in proportion to the KL divergence between base and retrieval-conditioned next-token distributions.",
+      "layperson": "When the model reads relevant documents, its word predictions shift toward the evidence. We predict that the stronger this shift—measured by a standard distance between probability distributions—the fewer hallucinations you see. This gives a measurable dial for how much retrieval helps.",
+      "falsification": "For QA tasks with citations, compute per-token KL(p(·|x) || p(·|x,R)) and per-example hallucination labels; fit a linear model predicting hallucination probability from KL; if slope is not significantly negative and R² < 0.5 across datasets (e.g., NQ-Open, TriviaQA, PopQA), the theory is falsified.",
+      "ibm_cost_plan": "Implementation: Build a simple BM25/ColBERT retriever and run base vs retrieval-conditioned generation, logging logits; Benchmarks: NQ-Open, TriviaQA, PopQA with citation-based hallucination checks; Models: Mistral-7B, Qwen2-7B; Measurement: per-example KL, hallucination rate, regression stats with CIs; Cost: 1×A100 80GB, ≈18 GPU-hours (~$36–$54).",
+      "novelty": "It frames RAG’s benefit as a concrete probabilistic regularizer with a linear predictive law, not just qualitative error reduction."
+    },
+    {
+      "index": 5,
+      "title": "The IDF Hallucination Law",
+      "summary": "Tokens with higher inverse document frequency in ground-truth answers have disproportionately higher error rates absent retrieval.",
+      "layperson": "Rare words like obscure names are harder for models to get right, and we claim their rarity directly predicts mistakes. The rarer the word in the training-like data, the more likely the model is to hallucinate it unless given sources. This yields a simple risk score for answers.",
+      "falsification": "Compute per-token IDF from a large corpus and regress token-level error indicators in generated answers against IDF while controlling for position and length; if the IDF coefficient is not significantly positive across ≥3 QA datasets, the theory is falsified.",
+      "ibm_cost_plan": "Implementation: Build an IDF index over Wikipedia/CCNet, generate answers with/without RAG, align tokens to references, run mixed-effects logistic regression; Benchmarks: NQ, TriviaQA, HotpotQA; Models: Llama-3-8B-Instruct; Measurement: coefficient sign/magnitude, AUC for token-risk prediction; Cost: 1×A100 80GB, ≈10 GPU-hours plus CPU preprocessing (~$20–$30).",
+      "novelty": "It proposes a quantitative law linking lexical rarity to hallucination propensity at the token level."
+    },
+    {
+      "index": 6,
+      "title": "Prompt Compression Works at an MI Threshold",
+      "summary": "Compressing prompts to k learned tokens preserves task accuracy if and only if estimated mutual information between compressed and original prompts exceeds a threshold.",
+      "layperson": "We suggest you can shrink a long prompt down to a few learned tokens without losing accuracy, as long as those tokens keep enough information from the original. There is a measurable information threshold that predicts when compression will still work. This guides safe prompt shortening.",
+      "falsification": "Train a prompt autoencoder to produce k soft tokens and estimate I(compressed; original) (e.g., with MINE); if accuracy is not within 1% of the original whenever I exceeds a fitted threshold on validation, or fails when below it, the theory is falsified on held-out tasks.",
+      "ibm_cost_plan": "Implementation: Soft-token autoencoder plugged before the model’s embedding layer; estimate MI with MINE; sweep k; Benchmarks: GSM8K (reasoning), MMLU (knowledge), BBH (few-shot); Models: Qwen2-7B, Mistral-7B; Measurement: MI estimates vs accuracy, thresholded predictor precision/recall; Cost: 2×A100 80GB, ≈20 GPU-hours (~$40–$60).",
+      "novelty": "It provides an information-theoretic threshold criterion predicting when prompt token compression will preserve performance."
+    },
+    {
+      "index": 7,
+      "title": "Chain-of-Verification Approximates Self-Consistency Marginals",
+      "summary": "Verification steps produce final answer probabilities that closely match the empirical distribution from self-consistency sampling at an effective lower temperature.",
+      "layperson": "When a model checks its own work, we claim its final choices reflect what you’d get by trying many reasoned answers and taking the majority—just more efficiently. The checking phase acts like averaging many possibilities but with sharper confidence. This connects two popular methods.",
+      "falsification": "On reasoning tasks, compute the answer distribution from N self-consistency samples and compare to the model’s verification-stage distribution; if mean symmetric KL > 0.05 or cannot be matched by a single temperature-scaled base model, the theory is falsified.",
+      "ibm_cost_plan": "Implementation: Instrument CoVe prompts to log verification logits; generate N=64 self-consistency chains; fit temperature T’ to minimize KL; Benchmarks: GSM8K, StrategyQA, ARC-Challenge; Models: Llama-3-8B-Instruct; Measurement: symmetric KL, calibration (ECE), accuracy; Cost: 1×A100 80GB, ≈16 GPU-hours (~$32–$48).",
+      "novelty": "It posits a distributional equivalence between verification and self-consistency, yielding a concrete, testable KL bound."
+    },
+    {
+      "index": 8,
+      "title": "Gradient Starvation Has a Hessian Spectral Signature",
+      "summary": "Imbalanced pretraining produces top Hessian eigenvectors aligned with gradients of rare-token losses.",
+      "layperson": "If the training data is skewed, some features dominate learning while rare ones get ignored, a phenomenon called gradient starvation. We predict this leaves a fingerprint: the main curvature directions of the loss surface line up with the rare tokens the model struggles with. You can check this by probing the model’s sensitivity.",
+      "falsification": "Estimate top Hessian eigenvectors via Lanczos on a small held-out corpus and compute cosine similarity with the subspace spanned by gradients from rare-token examples; if alignment < 0.7 on average across layers/models, the theory is falsified.",
+      "ibm_cost_plan": "Implementation: Use backpack/hessian-eigenthings or custom Lanczos for Hessian-vector products; select rare-token minibatches using IDF; Benchmarks: WikiText-103 snippets and curated rare-token sets; Models: smaller open LMs (Pythia-410M/1B) and a 7B model for confirmation; Measurement: cosine sims, eigenspectrum concentration; Cost: For 7B: 1×A100 80GB, ≈20 GPU-hours; for small models: 1×A6000, ≈8 GPU-hours (~$60–$90 total).",
+      "novelty": "It predicts a specific alignment between curvature (Hessian) and rare-token gradients as a detectable mechanistic trace of gradient starvation."
+    },
+    {
+      "index": 9,
+      "title": "An Entropy Threshold Triggers Tool Use",
+      "summary": "LLMs invoke tools when their predictive entropy crosses a learned, domain-stable threshold.",
+      "layperson": "We suggest models decide to call a calculator, search, or API mainly when they feel uncertain beyond a fixed level. That uncertainty can be read directly from their probability spread over next tokens. A clear threshold would make tool use predictable and tunable.",
+      "falsification": "Log predictive entropy at decision points in tool-use datasets and fit a single-threshold classifier per domain; if ROC-AUC < 0.8 or learned thresholds vary by >15% across domains after calibration, the theory is falsified.",
+      "ibm_cost_plan": "Implementation: Instrument tool-augmented agents (LangChain/LlamaIndex) to record logits pre-call; simple threshold models; Benchmarks: Gorilla/ToolBench, Function-calling evals, WebShop; Models: Llama-3-8B-Instruct with tool adapters; Measurement: ROC-AUC, threshold stability, calibration curves; Cost: 1×A100 80GB, ≈12 GPU-hours (~$24–$36).",
+      "novelty": "It proposes a simple, domain-stable entropy rule as the primary driver of tool invocation."
+    },
+    {
+      "index": 10,
+      "title": "A Shared Low-Dimensional Logit Subspace Across LLMs",
+      "summary": "After affine calibration, different LLMs’ next-token logits for the same prompts lie in a common low-dimensional subspace.",
+      "layperson": "Even very different models may think in similar ways about next words. We claim their detailed predictions can be mapped into a shared small space with a simple transform. This could enable cheap model fusion and transfer.",
+      "falsification": "Collect logits from multiple models on the same prompt set, learn per-model affine maps to a shared space, and test if ≥90% variance is explained by ≤50 principal components; failure on two or more model pairs falsifies the theory.",
+      "ibm_cost_plan": "Implementation: Log logits from Llama-3-8B, Mistral-7B, Qwen2-7B; learn affine maps via Procrustes/CCA; run PCA on pooled aligned logits; Benchmarks: diverse prompt sets (Pile test, HELM prompts, MMLU stems); Measurement: variance explained, cross-model KL after projection; Cost: 1×A100 80GB, ≈14 GPU-hours (~$28–$42).",
+      "novelty": "It asserts a common, compact representational geometry of token probabilities across independently trained LLMs."
+    }
+  ]
+}

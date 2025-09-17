@@ -1,0 +1,94 @@
+{
+  "ideas": [
+    {
+      "index": 1,
+      "title": "Diversity-First Scaling Law for LLMs",
+      "summary": "At fixed total tokens, increasing data diversity boosts out-of-domain performance more than adding more same-domain tokens.",
+      "layperson": "Training on many different kinds of text may help a language model generalize better than simply feeding it more of the same kind. Think of a chef who tries many cuisines versus one who only cooks more pasta. The first chef adapts better to new dishes, even with the same total cooking time.",
+      "falsification": "Train multiple same-size models on datasets with the same token count but controlled diversity levels (e.g., varied domain clusters). Evaluate cross-domain perplexity and zero-shot accuracy; if performance does not increase monotonically with a quantitative diversity metric, the hypothesis is false.",
+      "ibm_cost_plan": "Implement dataset clustering (MiniLM embeddings + k-means) to create equal-token corpora at different diversity levels; train 125M–1.3B transformer baselines for 5–20B tokens on 8–64 A100-hours; measure cross-domain metrics (perplexity, MMLU, BIG-bench-lite); release code and data splits.",
+      "novelty": "It proposes a precise, testable scaling law prioritizing data diversity over size at fixed token budgets."
+    },
+    {
+      "index": 2,
+      "title": "Sparse Causal Feature Hypothesis in LLM Token Prediction",
+      "summary": "A small, sparsely selected set of hidden features suffices to predict each next token nearly as well as the full model.",
+      "layperson": "Even though a language model has many internal signals, only a few may really matter for deciding the next word. If we can find those few signals, we can understand and predict the model’s choices. This makes the model’s decisions easier to explain and test.",
+      "falsification": "Train L1-regularized linear probes on hidden states to predict next-token logits using top-k features selected per position; if, across datasets, sparse probes cannot match full-model accuracy/perplexity within a fixed margin (e.g., <5% relative), the hypothesis fails.",
+      "ibm_cost_plan": "Use open models (e.g., Pythia-410M/1B) and datasets (Wiki, C4); extract hidden states, fit LASSO with cross-validation; report accuracy vs k; compute causal effect by ablating selected features; budget: 200–800 GPU-hours for extraction and training.",
+      "novelty": "It claims universal sparse sufficiency at the token level with measurable margins, enabling straightforward empirical refutation."
+    },
+    {
+      "index": 3,
+      "title": "Entropy-Triggered Tool Use Threshold",
+      "summary": "There exists a stable logit-entropy threshold above which calling tools (search/calculator) yields positive expected accuracy gains.",
+      "layperson": "Models are less sure about some questions than others; we can measure this uncertainty. This idea says there’s a specific uncertainty level where asking a tool for help usually pays off. If the model is more uncertain than that, it should call the tool.",
+      "falsification": "Instrument models with optional tool calls; record pre-call logit entropy and post-call accuracy across QA/math/code tasks; if no single threshold (per model family) separates positive from negative utility across tasks, the hypothesis is falsified.",
+      "ibm_cost_plan": "Wrap an open LLM with calculator/web-search tools; log entropy and outcomes; sweep thresholds and compute net accuracy gain minus tool cost; validate on GSM8K, TriviaQA, and HumanEval; compute budget: ~100 GPU-hours plus modest API/compute for tools.",
+      "novelty": "It posits a universal, operational decision boundary for tool invocation derived from model uncertainty."
+    },
+    {
+      "index": 4,
+      "title": "Linear Subspace Composition Predicts Compositional Generalization",
+      "summary": "Performance on composed tasks can be predicted by angles between linear subspaces spanned by representations of the component tasks.",
+      "layperson": "If a model learns two simple skills, can it combine them to solve a more complex problem? This idea says we can check how the skills line up in the model’s internal space. When the skills align well, the combined task should work better.",
+      "falsification": "Collect hidden states for basis tasks and their compositions (e.g., PCFG or SCAN variants); compute principal subspaces and subspace angles; test whether composition accuracy is a function of cosine of subspace angles; failure to predict out-of-sample compositions falsifies it.",
+      "ibm_cost_plan": "Train small transformers (100M–300M) on synthetic compositional datasets; extract layer reps; compute PCA/CCA subspaces and predict composition accuracy; budget: 100–300 GPU-hours; release code for subspace analysis.",
+      "novelty": "It offers a quantitative geometric predictor of compositional generalization directly testable from representations."
+    },
+    {
+      "index": 5,
+      "title": "Self-Consistency Vote Fraction as a Calibrated Probability",
+      "summary": "The fraction of agreeing samples from self-consistency decoding yields a task-agnostic calibrated estimate of correctness after a single temperature mapping.",
+      "layperson": "If we ask a model the same question many times and see how often it gives the same answer, that agreement rate might tell us how likely the answer is right. With one simple adjustment, this rate could work across many tasks.",
+      "falsification": "For diverse benchmarks, draw N samples per query, compute vote fractions and correctness; fit one temperature per model to map vote fraction to probability; if calibration (e.g., ECE/Brier) is not good across unseen tasks, the hypothesis is false.",
+      "ibm_cost_plan": "Implement multi-sample decoding on QA, math, and code datasets; compute calibration curves and metrics; compare to logit-based baselines; compute cost: inference-only on 7B class models, ~50–150 GPU-hours.",
+      "novelty": "It asserts a simple, universal calibration method using vote fractions that generalizes across tasks with a single parameter."
+    },
+    {
+      "index": 6,
+      "title": "Reverse-Perplexity Neighbor Bump Detects Data Contamination",
+      "summary": "Contaminated test items exhibit a distinctive perplexity dip when evaluated on nearest-neighbor retrieved pretraining shards compared to clean items.",
+      "layperson": "If a test question was in the training data (or very close to it), the model should find it unusually easy in related documents. By checking how surprised the model is on nearby texts, we can spot hidden leakage.",
+      "falsification": "Build ANN indices over pretraining-like corpora; for each test item, retrieve neighbors and compute model perplexity; inject known contaminated items; if contaminated and clean distributions are not separable (AUC near 0.5), the hypothesis fails.",
+      "ibm_cost_plan": "Use FAISS on The Pile/RefinedWeb shards; compute embeddings, retrieve k neighbors, run perplexity; validate with synthetic and known-leak sets; budget: CPU for indexing plus ~100 GPU-hours for perplexity passes.",
+      "novelty": "It proposes a concrete, model-based statistical signature to flag contamination without relying on exact string matches."
+    },
+    {
+      "index": 7,
+      "title": "Latent Workspace Bottleneck from Attention Spectrum Rank",
+      "summary": "The maximum effective reasoning length scales with the numerical rank of attention matrices’ spectra, not raw context length.",
+      "layperson": "Even if a model can read many tokens, it may only juggle a limited number of ideas at once. This limit may be set by how many strong “channels” its attention uses, not by the total text it sees.",
+      "falsification": "Estimate attention spectrum ranks across layers; apply controlled low-rank projections/perturbations; measure degradation on long-chain tasks; if reasoning length does not correlate with rank (and rank changes don’t shift it), the hypothesis is false.",
+      "ibm_cost_plan": "Hook attention matrices in open models; compute eigen/singular spectra and low-rank projections; evaluate on LongBench and chain-of-thought datasets; ~150–300 GPU-hours.",
+      "novelty": "It reframes context reasoning capacity as a measurable spectral property, enabling direct causal tests via rank manipulations."
+    },
+    {
+      "index": 8,
+      "title": "In-Context DFA Emulation in Regular Language Tasks",
+      "summary": "During few-shot regular language classification, LLMs emulate minimal DFAs with state counts reflected in attention-head state usage.",
+      "layperson": "For simple pattern rules like strings with an even number of zeros, computers use tiny machines with a few states. This idea says language models mimic such machines when given examples, reusing a small number of attention patterns as states.",
+      "falsification": "Construct regular-language prompts; learn minimal DFAs; cluster head-wise activation patterns across positions; test if cluster transitions match DFA transitions and scale with DFA size; mismatch or no scaling falsifies it.",
+      "ibm_cost_plan": "Generate synthetic regular languages; run probing on head activations; align clusters to DFA states and compute transition accuracy; budget: 50–150 GPU-hours on 125M–1B models.",
+      "novelty": "It specifies a mechanistic, state-level correspondence between attention dynamics and formal automata behavior."
+    },
+    {
+      "index": 9,
+      "title": "Reward Rank Match Predicts RLHF Win-Rate",
+      "summary": "The Kendall tau between human preference orderings and reward model scores predicts RLHF win-rate via a stable monotonic curve across models.",
+      "layperson": "If a scoring model agrees with people on which answers are better, the final chatbot should win more head-to-head comparisons. This claim says the amount of agreement translates into a predictable win rate.",
+      "falsification": "Compute tau between human pairs and reward scores on held-out sets; train RLHF policies on multiple bases; test if a single monotonic mapping from tau to win-rate holds out-of-sample; failure to generalize falsifies it.",
+      "ibm_cost_plan": "Use open preference datasets; train reward models of varying quality; run lightweight PPO/DPO on 350M–3B backbones; evaluate win-rates via standardized arenas; budget: 500–1500 GPU-hours.",
+      "novelty": "It proposes an architecture-agnostic, rank-based predictor for downstream conversational win-rate."
+    },
+    {
+      "index": 10,
+      "title": "Adversarial Margin Predicts Jailbreak Robustness",
+      "summary": "The logit margin on harmful prompts after adversarial training predicts robustness to unseen jailbreaks with a universal break-point.",
+      "layperson": "Safety-tuned models try to avoid harmful responses, but attackers find tricks. This idea says a simple score—the gap between safe and unsafe choices—tells us how hard it is to break the model, with a clear cutoff.",
+      "falsification": "Train models with varying adversarial objectives; measure post-training harmful-vs-safe logit margins; evaluate with diverse jailbreak suites; if margins do not correlate with robustness or show no consistent threshold, the hypothesis fails.",
+      "ibm_cost_plan": "Implement adversarial training with margin penalties; log margins; run red-teaming benchmarks (e.g., AdvBench, jailbreak prompts); compute correlations and threshold analysis; budget: 600–1200 GPU-hours.",
+      "novelty": "It identifies a simple, model-internal scalar as a predictive indicator of out-of-distribution jailbreak resistance."
+    }
+  ]
+}

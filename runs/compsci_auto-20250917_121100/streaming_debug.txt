@@ -1,0 +1,249 @@
+=== PROMPT ===
+You are a creative scientific researcher. Be direct and concise.
+
+        Task: Propose EXACTLY 10 ideas (no more, no less) for novel, falsifiable scientific theories that satisfy the constraints.
+        Field: compsci
+
+        Constraints of Paper:
+        {
+  "overview": "Research into using small LLMs for agentic coding",
+  "constraints": {
+    "testable": "Can validate with code"
+  }
+}
+
+
+        IMPORTANT: You must provide EXACTLY 10 ideas numbered 1 through 10. Stop after idea 10.
+
+        Output format for each of the 10 ideas:
+
+        1) <Concise Title>
+        Summary: <one concise sentence>
+        For a smart layperson: <2–3 sentences explaining the idea accessibly>
+        Falsification: <1–3 sentences with concrete steps>
+        Novelty: <one sentence on why this is new>
+
+        2) ... (repeat for ideas 2 through 10)
+
+        STOP after idea 10. Do not provide more than 10 ideas.
+
+=== STREAMING ===
+1) Microtest-First Agentic Loop
+Summary: Small
+Parsed idea 1: Microtest-First Agentic Loop...
+  Summary: Small...
+
+=== DISPLAY UPDATE ===
+Idea 1: Microtest-First Agentic Loop
+  Summary: Small
+ LLM coding agents that first generate minimal failing unit tests before writing code achieve higher task success than agents that write code first.
+For a smart layperson: Instead of coding immediately, the agent invents tiny tests that would fail on a blank solution. Then it makes code to pass those tests and adds more tests iteratively. This tightens the target and reduces guesswork.
+Falsification: Implement two agents with the same 3–8B model on MBPP/HumanEval/SWE-bench Lite: (A) code-first; (B) microtest-first loop. Compare pass@1 and solved repo issues with bootstrapped CIs; if B is not significantly better, the theory fails.
+Novelty: Prior work focuses on test generation post-hoc, not a test-first, minimal-failing-test-driven control loop for small LLM agents.
+
+2) Compiler-Only Feedback Superiority for Small LLMs
+Summary: For
+Parsed idea 2: Compiler-Only Feedback Superiority for Small LLMs...
+  Summary: For...
+
+=== DISPLAY UPDATE ===
+Idea 1: Microtest-First Agentic Loop
+  Summary: Small
+Idea 2: Compiler-Only Feedback Superiority for Small LLMs
+  Summary: For
+ small LLMs, an agent loop that relies exclusively on compiler/interpreter errors as critique outperforms loops that include natural-language self-critique.
+For a smart layperson: Small models struggle to “talk to themselves” clearly. Letting the compiler be the only critic gives precise, machine-checked feedback that the model can follow reliably.
+Falsification: Compare two agents on code tasks: (A) uses compiler/runtime traces only; (B) adds self-reflective NL critiques between attempts. Measure success rate, steps-to-solve, and token cost; lack of improvement for A falsifies the claim.
+Novelty: Contrasts the common self-reflection paradigm by asserting that removing NL self-critique benefits small models.
+
+3) Patch-Graph Planning Improves Convergence
+Summary: Represent
+Parsed idea 3: Patch-Graph Planning Improves Convergence...
+  Summary: Represent...
+
+=== DISPLAY UPDATE ===
+Idea 1: Microtest-First Agentic Loop
+  Summary: Small
+Idea 2: Compiler-Only Feedback Superiority for Small LLMs
+  Summary: For
+Idea 3: Patch-Graph Planning Improves Convergence
+  Summary: Represent
+ing the agent’s plan as a DAG of small code patches leads to faster convergence and higher success than linear iterative editing.
+For a smart layperson: Instead of editing files in a straight line, the agent lays out small changes as a dependency graph and applies them in order. This avoids backtracking and conflicting edits.
+Falsification: Implement linear-edit vs DAG-of-patches planners with the same 7–8B model on SWE-bench Lite; compare solved rate, revert count, and total patch attempts. If the DAG planner isn’t better, the theory fails.
+Novelty: Introduces explicit patch-graph planning as the control structure for small LLM coding agents.
+
+4) Distilled Edit Primitives Boost Generalization
+Summary: Dist
+Parsed idea 4: Distilled Edit Primitives Boost Generalization...
+  Summary: Dist...
+
+=== DISPLAY UPDATE ===
+Idea 1: Microtest-First Agentic Loop
+  Summary: Small
+Idea 2: Compiler-Only Feedback Superiority for Small LLMs
+  Summary: For
+Idea 3: Patch-Graph Planning Improves Convergence
+  Summary: Represent
+Idea 4: Distilled Edit Primitives Boost Generalization
+  Summary: Dist
+illing reusable “edit primitives” (e.g., rename, refactor-loop, add-guard) into a small LLM improves generalization across tasks compared to end-to-end code generation.
+For a smart layperson: The agent learns a toolbox of small, reusable edits rather than writing whole programs at once. It composes these moves to solve new problems more reliably.
+Falsification: Train two agents: (A) primitive-distilled via imitation/RL from edit traces; (B) standard generate-and-edit. Test on unseen repos in SWE-bench Lite; if A does not significantly outperform B, the theory is false.
+Novelty: Claims that an explicit library of learned edit skills is a better inductive bias for small LLM agents.
+
+5) Tool Minimalism Reduces Cognitive Load
+Summary: Small
+Parsed idea 5: Tool Minimalism Reduces Cognitive Load...
+  Summary: Small...
+
+=== DISPLAY UPDATE ===
+Idea 1: Microtest-First Agentic Loop
+  Summary: Small
+Idea 2: Compiler-Only Feedback Superiority for Small LLMs
+  Summary: For
+Idea 3: Patch-Graph Planning Improves Convergence
+  Summary: Represent
+Idea 4: Distilled Edit Primitives Boost Generalization
+  Summary: Dist
+Idea 5: Tool Minimalism Reduces Cognitive Load
+  Summary: Small
+ LLM coding agents with a minimal tool set (edit, run, test) outperform agents exposed to many tools (search, doc, lint, format, debug, etc.).
+For a smart layperson: Too many buttons can confuse a small model. Giving it only a few precise tools helps it focus and make fewer mistakes.
+Falsification: Build two agents: (A) minimal tool trio; (B) rich tool stack (≥7 tools). On identical tasks, compare success rate, tool-call entropy, and token usage; if B matches or beats A, the hypothesis is false.
+Novelty: Posits an optimal low tool-count regime for small LLMs, counter to the trend of adding more tools.
+
+6) Slot-Structured Context Stabilizes Behavior
+Summary: En
+Parsed idea 6: Slot-Structured Context Stabilizes Behavior...
+  Summary: En...
+
+=== DISPLAY UPDATE ===
+Idea 1: Microtest-First Agentic Loop
+  Summary: Small
+Idea 2: Compiler-Only Feedback Superiority for Small LLMs
+  Summary: For
+Idea 3: Patch-Graph Planning Improves Convergence
+  Summary: Represent
+Idea 4: Distilled Edit Primitives Boost Generalization
+  Summary: Dist
+Idea 5: Tool Minimalism Reduces Cognitive Load
+  Summary: Small
+Idea 6: Slot-Structured Context Stabilizes Behavior
+  Summary: En
+forcing a fixed template with named slots (goal, spec, tests, plan, diffs, errors) reduces hallucinations and increases solve rate for small coding agents.
+For a smart layperson: The agent always reads and writes in the same labeled sections. This structure makes it harder to get lost and easier to stay on task.
+Falsification: Compare free-form prompting vs a strict slot template using the same 3–8B model on HumanEval+ and SWE-bench Lite; measure success, off-policy errors, and context thrash. No improvement falsifies the theory.
+Novelty: Treats the prompt as a typed state machine tailored for small LLM limits.
+
+7) Static-Analyzer Reward Shaping Accelerates Learning
+Summary: Using
+Parsed idea 7: Static-Analyzer Reward Shaping Accelerates Learnin...
+  Summary: Using...
+
+=== DISPLAY UPDATE ===
+Idea 1: Microtest-First Agentic Loop
+  Summary: Small
+Idea 2: Compiler-Only Feedback Superiority for Small LLMs
+  Summary: For
+Idea 3: Patch-Graph Planning Improves Convergence
+  Summary: Represent
+Idea 4: Distilled Edit Primitives Boost Generalization
+  Summary: Dist
+Idea 5: Tool Minimalism Reduces Cognitive Load
+  Summary: Small
+Idea 6: Slot-Structured Context Stabilizes Behavior
+  Summary: En
+Idea 7: Static-Analyzer Reward Shaping Accelerates Learnin
+  Summary: Using
+ static analyzer findings (type errors, dead code, taints) as step-wise rewards yields better agent learning than pass/fail test rewards alone.
+For a smart layperson: Instead of only “works/doesn’t work,” the agent also gets hints from code checkers about specific problems. These extra signals help it fix issues faster.
+Falsification: Train/evaluate two agents: (A) RL/iterative improvement with analyzer-derived dense rewards; (B) sparse unit-test rewards only. On held-out tasks, if A doesn’t outperform B, the claim fails.
+Novelty: Proposes dense, program-analysis-based reward shaping specifically for small LLM agent training.
+
+8) Sketch-and-Fill with Verified Holes Beats Direct Generation
+Summary: Agents
+Parsed idea 8: Sketch-and-Fill with Verified Holes Beats Direct G...
+  Summary: Agents...
+
+=== DISPLAY UPDATE ===
+Idea 1: Microtest-First Agentic Loop
+  Summary: Small
+Idea 2: Compiler-Only Feedback Superiority for Small LLMs
+  Summary: For
+Idea 3: Patch-Graph Planning Improves Convergence
+  Summary: Represent
+Idea 4: Distilled Edit Primitives Boost Generalization
+  Summary: Dist
+Idea 5: Tool Minimalism Reduces Cognitive Load
+  Summary: Small
+Idea 6: Slot-Structured Context Stabilizes Behavior
+  Summary: En
+Idea 7: Static-Analyzer Reward Shaping Accelerates Learnin
+  Summary: Using
+Idea 8: Sketch-and-Fill with Verified Holes Beats Direct G
+  Summary: Agents
+ that first produce a typed “sketch” with holes and then fill holes to satisfy type/tests outperform direct full-code generation for small models.
+For a smart layperson: The agent outlines the program with placeholders that must fit certain shapes (types/tests). It fills each hole one by one, checking each piece as it goes.
+Falsification: Implement a two-phase sketch/hole-filling agent vs a direct coder on MBPP/HumanEval; compare pass@1 and backtracking steps. If sketching doesn’t help, the theory is false.
+Novelty: Brings classical program sketching into an agent loop tailored to small LLM constraints.
+
+9) CRDT Patch Memory Prevents Regressions
+Summary: Maintaining
+Parsed idea 9: CRDT Patch Memory Prevents Regressions...
+  Summary: Maintaining...
+
+=== DISPLAY UPDATE ===
+Idea 1: Microtest-First Agentic Loop
+  Summary: Small
+Idea 2: Compiler-Only Feedback Superiority for Small LLMs
+  Summary: For
+Idea 3: Patch-Graph Planning Improves Convergence
+  Summary: Represent
+Idea 4: Distilled Edit Primitives Boost Generalization
+  Summary: Dist
+Idea 5: Tool Minimalism Reduces Cognitive Load
+  Summary: Small
+Idea 6: Slot-Structured Context Stabilizes Behavior
+  Summary: En
+Idea 7: Static-Analyzer Reward Shaping Accelerates Learnin
+  Summary: Using
+Idea 8: Sketch-and-Fill with Verified Holes Beats Direct G
+  Summary: Agents
+Idea 9: CRDT Patch Memory Prevents Regressions
+  Summary: Maintaining
+ code changes as a CRDT of patches with automatic merge/resolution reduces regressions and increases final solve rate for small LLM agents.
+For a smart layperson: Every change is stored as a small, mergeable patch rather than overwriting files. The system can combine good changes and avoid undoing progress.
+Falsification: Compare a normal file-overwrite agent to a CRDT-patch agent on multi-step repo fixes (SWE-bench Lite); measure regression rate and solved issues. No reduction in regressions falsifies the claim.
+Novelty: Applies CRDT-based memory to manage multi-step LLM code edits.
+
+10) Spec-Delta Negotiation Improves Convergence
+Summary: After
+Parsed idea 10: Spec-Delta Negotiation Improves Convergence...
+  Summary: After...
+
+=== DISPLAY UPDATE ===
+Idea 1: Microtest-First Agentic Loop
+  Summary: Small
+Idea 2: Compiler-Only Feedback Superiority for Small LLMs
+  Summary: For
+Idea 3: Patch-Graph Planning Improves Convergence
+  Summary: Represent
+Idea 4: Distilled Edit Primitives Boost Generalization
+  Summary: Dist
+Idea 5: Tool Minimalism Reduces Cognitive Load
+  Summary: Small
+Idea 6: Slot-Structured Context Stabilizes Behavior
+  Summary: En
+Idea 7: Static-Analyzer Reward Shaping Accelerates Learnin
+  Summary: Using
+Idea 8: Sketch-and-Fill with Verified Holes Beats Direct G
+  Summary: Agents
+Idea 9: CRDT Patch Memory Prevents Regressions
+  Summary: Maintaining
+Idea 10: Spec-Delta Negotiation Improves Convergence
+  Summary: After
+ each run, having the agent update a concise “spec delta” (what changed in requirements) improves convergence versus re-reading the full spec each time.
+For a smart layperson: The agent keeps a short running note of what’s still wrong or newly discovered. It plans next steps from this evolving checklist instead of the whole long description.
+Falsification: Compare two agents: (A) maintains and conditions on a spec-delta file; (B) re-prompts with the full spec only. On repo-level tasks, if A doesn’t converge in fewer steps with higher success, the theory fails.
+Novelty: Introduces a compact, evolving requirement trace as a control variable for small LLM coding agents.

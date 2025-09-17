@@ -1,0 +1,69 @@
+=== PROMPT ===
+You are a creative scientific researcher. Be direct and concise.
+
+        Task: Propose EXACTLY 10 ideas (no more, no less) for novel, falsifiable scientific theories that satisfy the constraints.
+        Field: compsci
+
+        Constraints of Paper:
+        {
+  "overview": "Research into using small LLMs for agentic coding",
+  "constraints": {
+    "testable": "Can validate with code"
+  }
+}
+
+
+        IMPORTANT: You must provide EXACTLY 10 ideas numbered 1 through 10. Stop after idea 10.
+
+        Output format for each of the 10 ideas:
+
+        1) <Concise Title>
+        Summary: <one concise sentence>
+        For a smart layperson: <2–3 sentences explaining the idea accessibly>
+        Falsification: <1–3 sentences with concrete steps>
+        Novelty: <one sentence on why this is new>
+
+        2) ... (repeat for ideas 2 through 10)
+
+        STOP after idea 10. Do not provide more than 10 ideas.
+
+=== STREAMING ===
+1) Compiler
+Found idea 1: Compiler...
+
+=== DISPLAY UPDATE ===
+Idea 1: Compiler
+  Summary: 
+-in-the-Loop Advantage for Small Coding Agents
+Summary: Small LLM agents that tightly integrate compiler, linter, and unit-test feedback can match or exceed larger models on bug-fixing tasks.
+For a smart layperson: Giving a smaller model instant signals from tools (errors, failing tests) lets it correct itself quickly, like a junior programmer who compiles often. This shortens the trial-and-error loop so size matters less. The claim is that this can overcome much of the raw intelligence gap.
+Falsification: Implement an agent loop that auto-compiles, runs tests, and parses error output to patch code; compare ≤7B models vs ≥30B single-shot or minimal-tool baselines on SWE-bench-lite or Defects4J using exact-match and pass@1. If small-with-tools does not statistically meet or beat larger baselines across tasks (e.g., bootstrap CI ≥95%), the theory is false.
+Novelty: Prior work uses tools, but this claims a size-compensation effect strong enough to reverse rank on real repositories.
+
+2) Program
+Found idea 2: Program...
+
+=== DISPLAY UPDATE ===
+Idea 1: Compiler
+  Summary: 
+Idea 2: Program
+  Summary: 
+-of-Thought (PoT) Planning Disproportionately Benefits Small Models
+Summary: Converting tasks into an executable pseudo-DSL plan before coding yields larger relative gains for small LLMs than for large models.
+For a smart layperson: If a small model first writes a machine-checkable plan (like a recipe) and then writes code, it makes fewer logic mistakes. Big models already plan implicitly, so they benefit less from this explicit step.
+Falsification: Build a tiny PoT interpreter (e.g., a JSON/DSL for functions, tests, invariants) and enforce a two-phase agent; compare to direct code generation for ≤7B and ≥30B models on HumanEval/MBPP/SWE-bench-lite. If relative improvement for small models is not significantly larger than for big models, reject.
+Novelty: Tests the specific scaling interaction between explicit planning representations and model size.
+
+3) Role-S
+Found idea 3: Role-S...
+
+=== DISPLAY UPDATE ===
+Idea 1: Compiler
+  Summary: 
+Idea 2: Program
+  Summary: 
+Idea 3: Role-S
+  Summary: 
+pecialized Swarms Beat Monoliths Under Equal Token Budgets
+Summary: A small multi-agent team (planner, implementer, tester) outperforms a single larger model when total tokens are held constant.
+For a

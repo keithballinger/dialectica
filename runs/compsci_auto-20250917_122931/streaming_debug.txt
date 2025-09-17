@@ -1,0 +1,96 @@
+=== PROMPT ===
+You are a creative scientific researcher. Be direct and concise.
+
+        Task: Propose EXACTLY 10 ideas (no more, no less) for novel, falsifiable scientific theories that satisfy the constraints.
+        Field: compsci
+
+        Constraints of Paper:
+        {
+  "overview": "Research into using small LLMs for agentic coding",
+  "constraints": {
+    "testable": "Can validate with code"
+  }
+}
+
+
+        IMPORTANT: You must provide EXACTLY 10 ideas numbered 1 through 10. Stop after idea 10.
+
+        Output format for each of the 10 ideas:
+
+        1) <Concise Title>
+        Summary: <one concise sentence>
+        For a smart layperson: <2–3 sentences explaining the idea accessibly>
+        Falsification: <1–3 sentences with concrete steps>
+        Novelty: <one sentence on why this is new>
+
+        2) ... (repeat for ideas 2 through 10)
+
+        STOP after idea 10. Do not provide more than 10 ideas.
+
+=== STREAMING ===
+1) Planning-Depth Scaling Law for Small LLM Coders
+Summary: Small
+Parsed idea 1: Planning-Depth Scaling Law for Small LLM Coders...
+  Summary: Small...
+
+=== DISPLAY UPDATE ===
+Idea 1: Planning-Depth Scaling Law for Small LLM Coders
+  Summary: Small
+ LLM agentic coding performance increases approximately log-linearly with allocated “thinking tokens” for plan-execute loops up to a predictable saturation point.
+For a smart layperson: Giving a small coding model more room to plan its steps before writing code should steadily improve its results, but only up to a point. After that point, extra planning no longer helps much. This proposes a measurable curve that predicts how much planning budget is worth it.
+Falsification: Implement a planner-executor agent with a 7B model; sweep planning token budgets (e.g., 256→8192) on SWE-bench-lite and HumanEval+. Fit curves and test for log-linear improvement up to a breakpoint; compare to a single-shot baseline. If no monotonic log-linear trend or no identifiable breakpoint with improved success exists, the theory is false.
+Novelty: Introduces a specific scaling law in the planning-token dimension for small LLM agent coders.
+
+2) External Memory Beats Parameter Growth at Equal Compute
+Summary: For repo-level coding, adding an episodic retrieval memory to a small LLM yields larger gains than increasing model parameters by ~20% under equal inference compute.
+For a smart layperson: Instead of making the model a bit bigger, give it a notebook it can consult during a task. The claim is that this notebook helps more than the modest size increase, for the same cost. This is about smarter use of resources, not just bigger models.
+Falsification: Compare three agents on SWE-bench-lite/RepoBench: (A) 7B baseline, (B) 8–9B baseline (≈+20%), (C) 7B + retrieval memory of prior steps/files/tests with fixed extra compute to match (B). If (C) does not significantly outperform (B) on success rate under matched token/latency budgets, the theory fails.
+Novelty: Posits a compute-controlled tradeoff showing external memory is more impactful than modest parameter growth for agentic coding.
+
+3) Static-Analyzer-as-Critic Outperforms Test-Only Loops
+Summary: Incorporating static analysis (type-checkers, linters) as stepwise critics yields more bug fixes than relying solely on unit tests in small LLM repair loops.
+For a smart layperson: Beyond running tests, have the agent consult tools that detect code issues without running it. These tools can point out problems earlier and more precisely. The claim is that this extra “critic” improves results for small coders.
+Falsification: On SWE-bench-lite, compare agents: (1) test-only repair loop; (2) test + static analysis at each edit; (3) static-analysis-only loop. If (2) does not significantly outperform (1) in task success and post-merge defect rate under matched budgets, the claim is false.
+Novelty: Separates and quantifies the unique contribution of static analysis as an in-loop critic for small LLM agents.
+
+4) Schema-Constrained Tool Use Narrows the Small–Large Gap
+Summary: Strict JSON schema and typed function-call enforcement reduces API misuse enough that a 7B agent matches a 70B baseline within 5% on API-heavy coding tasks.
+For a smart layperson: If you force the model to call tools with exact, strongly typed formats, it makes fewer mistakes. This can let a small model perform nearly like a big one when using APIs. It’s like giving the model guardrails that level the playing field.
+Falsification: Build API-calling benchmarks (e.g., CRUD services, cloud SDK tasks, Git ops). Compare unconstrained vs schema-enforced tool calls for 7B and 70B agents. If the schema-enforced 7B does not come within 5% absolute success of 70B or show a larger relative gain than 70B, falsify.
+Novelty: Claims a quantitative equalization threshold from strict schema enforcement specifically for agentic API coding.
+
+5) Role-Specialized Micro-Agents Beat Monoliths at Equal Token Budget
+Summary: A small team of 3–5 specialized 3–7B agents (planner, searcher, coder, tester, critic) outperforms a single larger model given the same total token budget on repo tasks.
+For a smart layperson: Split the job among focused helpers—one plans, one writes code, one tests, etc. With the same total “thinking time,” this team can do better than one big generalist. It’s an efficiency-through-specialization claim.
+Falsification: Implement a router/orchestrator with role prompts; compare against a single 13–34B agent on SWE-bench-lite with equal total tokens and wall-time. If the team does not significantly outperform on success and regression rates, the theory fails.
+Novelty: Establishes a token-parity comparison showing structured specialization beats monolithic inference for small LLMs.
+
+6) Graph-Aware Planning Improves Long-Horizon Fixes
+Summary: Providing repository dependency graphs to the planner yields higher success on multi-file fixes than context-only selection for small LLM agents.
+For a smart layperson: Give the agent a map of how files depend on each other. With the map, it can plan better changes across the whole project. The claim is that this map-driven planning concretely improves big, multi-step fixes.
+Falsification: Build two agents: (A) plan with repo file ranking via TF-IDF; (B) plan using a dependency/call graph (e.g., static analysis, import graph). Evaluate on multi-file SWE-bench-lite tasks. If (B) is not significantly better in success and fewer reverts, falsify.
+Novelty: Tests the specific effect of graph-structured repo context on small LLM agent planning quality.
+
+7) Action-Policy Distillation Matches CoT with Fewer Tokens
+Summary: Distilling an action-selection policy from expert traces enables a small LLM agent to match chain-of-thought performance while using fewer tokens.
+For a smart layperson: Instead of thinking out loud each time, the agent learns a shortcut policy for what to do next based on past expert behavior. This can save tokens and time while keeping quality. It’s like learning a playbook for coding tasks.
+Falsification: Train a policy head or lightweight controller on curated agent traces; compare against CoT-based 7B on SWE-bench-lite. If policy-distilled agent does not reach within 2% success of CoT while cutting action/think tokens by ≥25%, falsify.
+Novelty: Proposes a concrete token-efficiency parity claim between policy-distilled control and CoT for small agentic coders.
+
+8) Edit-Diff Constraint Reduces Regressions and Cost
+Summary: Constraining small LLM agents to produce minimal diffs (not full files) lowers regression rates and token usage versus unconstrained file rewrites.
+For a smart layperson: Tell the agent to change only what’s necessary instead of rewriting entire files. That reduces accidental breakages and wastes fewer tokens. The claim is that this rule measurably improves outcomes.
+Falsification: On SWE-bench-lite and RepoRepair tasks, compare agents outputting unified diffs vs full-file content under equal budgets. If diff-constrained agents don’t achieve lower regression rate and ≥15% token reduction with equal or better success, the theory is false.
+Novelty: Quantifies a principled editing constraint as a core design choice for small LLM coding agents.
+
+9) Uncertainty-Calibrated Tool Bandits Boost Small LLMs Disproportionately
+Summary: A bandit that selects the next tool (tests, search, lints) using model uncertainty improves success more for small LLM agents than for large ones.
+For a smart layperson: Let the agent pick which tool to use next based on how unsure it is. Small models are often less certain, so this guidance helps them more. The claim predicts a bigger relative boost for small models.
+Falsification: Implement Thompson/Upper Confidence Bound over tools with uncertainty from logits/entropy; compare delta success for 7B vs 70B agents on SWE-bench-lite. If the relative gain for 7B is not significantly larger, falsify.
+Novelty: Introduces uncertainty-aware tool scheduling as a mechanism yielding size-dependent benefits.
+
+10) Solver-Augmented Small Agents Outperform Larger Models on Spec-Heavy Tasks
+Summary: Small LLMs that delegate constraints to SMT/type solvers outperform larger pure-LLM agents on tasks with precise specs (e.g., algorithmic puzzles, invariant-heavy code).
+For a smart layperson: When the problem has strict rules, offload rule-checking to a solver while the small model handles structure and glue code. This combo can beat a bigger model that guesses. It’s brains plus calculator versus bigger guesser.
+Falsification: Build an agent that generates candidate code and constraints for Z3/miri/mypy; test on HumanEval+, Codeforces-style katas with tests. If a 7B+solver does not significantly exceed a 13–34B no-solver baseline on pass@1 under equal compute, falsify.
+Novelty: Claims a well-defined region of superiority for solver-augmented small agents on specification-rich coding tasks.
