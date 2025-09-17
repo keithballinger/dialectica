@@ -32,11 +32,12 @@ Build a Python CLI that orchestrates GPT5, Gemini 2.5 Pro, and Grok4 to invent a
   - [ ] Resolve `field` and domain pack from constraints (CLI overrides allowed).
   - [ ] Template the “Constraints of Paper” section into prompts.
   - [ ] Store kickoff prompt in run folder.
+  - [ ] Add criteria JSON (overview + criteria map) and use it in prompts and TUI.
 
 - [ ] Phase 4: Idea Generation & Scoring
-  - [ ] Generate 10 ideas (GPT5).
-  - [ ] Score ideas (GPT5, Grok4, Gemini 2.5 Pro) with 1–10 and short rationale; prefer JSON schema for ratings.
-  - [ ] Save ideas and both scoring reports as Markdown.
+  - [ ] Generate 10 ideas (GPT5) as JSON (ideas_v1). Abort on invalid JSON.
+  - [ ] Score ideas (GPT5, Grok4, Gemini 2.5 Pro) as JSON (ratings_v1). Abort on invalid JSON.
+  - [ ] Save a single `ideas.json` and `ratings.json` (combined); no Markdown ratings artifacts.
   - [ ] Interactive idea selection; persist selection.
   - [ ] Auto-selection: sum three scores; tie-break with seedable RNG.
 
@@ -56,11 +57,10 @@ Build a Python CLI that orchestrates GPT5, Gemini 2.5 Pro, and Grok4 to invent a
   - [ ] Save full transcripts per model as Markdown.
 
 - [ ] Phase 7: UX & Ergonomics
+  - [ ] TUI main screen revamp: ideas list with scores, idea details with criteria descriptions, timeline of drafts/ratings, pretty-rendered Markdown drafts.
   - [ ] Clear progress logs to stdout.
   - [ ] Human-readable file naming in runs directory.
-  - [ ] Helpful errors and recovery (retry, resume run).
-  - [ ] Batch mode: `--all-ideas` processes every idea in separate runs.
-  - [ ] Branching: create new run from existing ideas.
+  - [ ] Fail-fast on invalid JSON; show status and logs in TUI.
 
 - [ ] Phase 8: Documentation
   - [ ] Update user guide as features land.

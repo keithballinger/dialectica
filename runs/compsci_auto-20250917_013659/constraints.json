@@ -1,0 +1,6 @@
+{
+  "overview": "Theory must be implementable in code, testable via simulation or benchmarks, and advance computer science theory or practice.\n  Should have clear computational complexity implications.",
+  "constraints": {
+    "testability": "Must be implementable and testable in Python/Java/C+"
+  }
+}

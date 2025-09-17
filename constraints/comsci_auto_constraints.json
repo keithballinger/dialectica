@@ -1,0 +1,6 @@
+{
+  "overview": "comp sci research focused on small LLMs",
+  "constraints": {
+    "testable": "validate through code"
+  }
+}

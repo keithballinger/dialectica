@@ -54,7 +54,7 @@ Note: Command names and flags will be finalized during implementation. The follo
 
 - Score all ideas (single-run flow):
   - `dialectica run score`
-  - Adds `ratings_gpt5.md`, `ratings_grok4.md`, and `ratings_gemini.md`.
+  - Produces `ratings.json` (ratings_v1 combined). Any invalid JSON/timeout aborts and writes status + error artifacts.
 
 - Select an idea (interactive):
   - `dialectica select`
@@ -71,14 +71,14 @@ Note: Command names and flags will be finalized during implementation. The follo
 
 - Auto-run after selection (no pauses except selection):
   - `dialectica run all`
-  - Executes ideas → score → select (interactive) → drafting to consensus.
+  - Executes ideas (ideas.json) → score (ratings.json) → select (interactive) → drafting to consensus.
   - Use `--auto-select --seed 42` to auto-pick highest total score.
   - Use `--from-ideas runs/compsci/ideas_gpt5.md` to seed from an existing ideas file.
   - To include extra constraints: `--constraints-text` or `--constraints-stdin`.
 
 - Run all ideas:
   - `dialectica run all --all-ideas --constraints constraints/quantum_ibm_cost.md --name batch`
-  - Generates (or loads) ideas, then creates separate runs for each idea and drafts each to completion (no initial scoring).
+  - Generates ideas (ideas.json), then creates separate runs for each idea and drafts each to completion (no scoring).
 
 - Start from an existing ideas file:
   - `dialectica run all --from-ideas runs/compsci/ideas_gpt5.md --auto-select --max-cycles 1000 --name from-compsci`

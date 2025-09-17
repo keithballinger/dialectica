@@ -7,6 +7,7 @@ from pathlib import Path
 from ..utils import load_dotenv
 from ..pipeline import runner
 from ..pipeline.artifacts import ensure_runs_dir, latest_run_dir, load_state, save_state
+from ..tui.app import run_tui
 
 
 def cmd_run_ideas(args: argparse.Namespace) -> None:
@@ -88,6 +89,9 @@ def cmd_draft(args: argparse.Namespace) -> None:
 
     print(f"Starting rounds at {current_round} → {next_provider}; max cycles: {cycles_remaining}")
     while cycles_remaining > 0:
+        # Check for TUI control flags
+        _check_abort(run_dir)
+        _wait_if_paused(run_dir)
         current_round, next_provider = runner.next_round(
             run_dir, constraints, current_round, next_provider
         )
@@ -107,13 +111,28 @@ def cmd_draft(args: argparse.Namespace) -> None:
     save_state(run_dir, phase="drafting", round=current_round - 1, next=next_provider)
 
 
+def _check_abort(run_dir: Path) -> None:
+    flag = Path(run_dir) / "control_abort"
+    if flag.exists():
+        raise SystemExit("Aborted by user (control_abort flag present)")
+
+
+def _wait_if_paused(run_dir: Path) -> None:
+    import time
+    flag = Path(run_dir) / "control_pause"
+    if flag.exists():
+        print("[paused] Waiting for resume (remove control_pause file)…")
+    while flag.exists():
+        time.sleep(1.0)
+
+
 def cmd_run_all(args: argparse.Namespace) -> None:
     print("[phase] run all")
     constraints = [Path(p) for p in args.constraints.split(",")] if args.constraints else []
     for p in constraints:
         if not Path(p).exists():
             raise SystemExit(f"Constraint file not found: {p}")
-    # Seed run with ideas (either from file or by generation)
+    # Kickoff
     if getattr(args, "from_ideas", None):
         run_dir = runner.create_run_from_existing_ideas(Path(args.from_ideas), constraints, name=args.name)
     else:
@@ -129,10 +148,59 @@ def cmd_run_all(args: argparse.Namespace) -> None:
             field=args.field,
             domain_pack=args.domain,
         )
-        runner.generate_ideas(run_dir, constraints, count=10)
-    # Only score when not processing all ideas
+
+    # If TUI requested, run entire pipeline in background (including idea generation) and start TUI inline
+    if getattr(args, "tui", False):
+        import threading, contextlib, io
+
+        def _run_pipeline():
+            with contextlib.redirect_stdout(io.StringIO()):
+                with contextlib.redirect_stderr(io.StringIO()):
+                    try:
+                        # Generate ideas if not from ideas
+                        if not getattr(args, "from_ideas", None):
+                            runner.generate_ideas(run_dir, constraints, count=10)
+
+                        if not getattr(args, "all_ideas", False):
+                            runner.score_ideas(run_dir, constraints)
+                            # Selection
+                            if getattr(args, "idea", None):
+                                runner.save_selected_idea(run_dir, int(args.idea))
+                            else:
+                                # Use auto-select in TUI mode to avoid blocking
+                                runner.auto_select_by_sum(run_dir, seed=args.seed)
+                            # Draft to consensus
+                            cmd_draft(argparse.Namespace(run=str(run_dir), ask_to_continue=False, max_cycles=args.max_cycles))
+                        else:
+                            # Batch mode
+                            src_ideas = run_dir / "ideas_gpt5.md"
+                            ideas_text = src_ideas.read_text(encoding="utf-8")
+                            all_ideas = runner.parse_ideas_list(ideas_text)
+                            for i in range(1, len(all_ideas) + 1):
+                                name = f"{(args.name or 'batch')}-idea-{i}"
+                                child = runner.create_run_from_existing_ideas(src_ideas, constraints, name=name)
+                                runner.save_selected_idea(child, i)
+                                cmd_draft(argparse.Namespace(run=str(child), ask_to_continue=False, max_cycles=args.max_cycles))
+                    except Exception:
+                        pass
+
+        threading.Thread(target=_run_pipeline, daemon=True).start()
+        code = run_tui(run_dir)
+        if code != 0:
+            raise SystemExit(code)
+        return
+    # Non-TUI pipeline continues inline
     if not getattr(args, "all_ideas", False):
+        # If we didn't generate ideas yet (from ideas), otherwise generate now
+        if not getattr(args, "from_ideas", None):
+            runner.generate_ideas(run_dir, constraints, count=10)
         runner.score_ideas(run_dir, constraints)
+        # Abort selection if scoring failed
+        st = load_state(run_dir)
+        if st.get("phase") != "scored":
+            print("Scoring failed. See status/ratings_*.txt, ratings_*_error.md, and error.log in the run folder.")
+            print(f"Run folder: {run_dir}")
+            return
     # Selection and drafting logic
     if getattr(args, "all_ideas", False):
         # Iterate through all ideas; create separate child runs without scoring
@@ -266,6 +334,7 @@ def main(argv: list[str] | None = None) -> None:
     p_all.add_argument("--constraints-stdin", action="store_true", help="Read additional constraints from STDIN")
     p_all.add_argument("--field", type=str, help="Override inferred field (e.g., compsci, quantum)")
     p_all.add_argument("--domain", type=str, help="Override domain pack (e.g., domain_compsci)")
+    p_all.add_argument("--tui", action="store_true", help="Launch TUI dashboard alongside the run")
     p_all.set_defaults(func=cmd_run_all)
 
     # resume
@@ -314,6 +383,17 @@ def main(argv: list[str] | None = None) -> None:
     p_branch.add_argument("--ask-to-continue", action="store_true")
     p_branch.add_argument("--max-cycles", type=int, default=10)
     p_branch.set_defaults(func=cmd_branch)
+
+    # tui
+    def cmd_tui(args: argparse.Namespace) -> None:
+        run = Path(args.run) if args.run else (latest_run_dir() or Path(""))
+        code = run_tui(run)
+        if code != 0:
+            raise SystemExit(code)
+
+    p_tui = sub.add_parser("tui", help="Open TUI dashboard for a run")
+    p_tui.add_argument("--run", type=str, help="Run directory (default: latest)")
+    p_tui.set_defaults(func=cmd_tui)
 
     args = parser.parse_args(argv)
     args.func(args)

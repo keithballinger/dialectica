@@ -1,0 +1,3 @@
+Publish.
+
+The proposed method is highly novel, addressing the critical problem of adaptive computation in LLMs at a granular token-level. The combination of uncertainty-gating, hidden reflections in the KV cache, and a dynamic peek-based stopping rule is a significant contribution. The paper's commitment to rigor is exemplary, evidenced by the precise Forward-Pass Equivalent (FPE) accounting, a comprehensive and compute-matched evaluation plan, and deep mechanistic diagnostics. The plan for validation on open-source models with released code ensures reproducibility. The work is well-structured, clearly written, and poised for high impact.

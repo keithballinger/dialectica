@@ -43,8 +43,8 @@ class Provider(Protocol):
 - `./runs/<timestamp or label>/` structure:
   - `kickoff_prompt.md`
   - `constraints.md`, `constraints_sources.txt`
-  - `ideas_gpt5.md`
-  - `ratings_gpt5.md`, `ratings_grok4.md`, `ratings_gemini.md` (single-run flow)
+  - `ideas.json` (ideas_v1)
+  - `ratings.json` (ratings_v1 combined; includes per-rater scores)
   - `selected_idea.md`
   - `drafts/round_01_gpt5.md`, `round_02_gemini.md`, `round_03_grok4.md`, ...
   - `judgments/round_XX_<provider>.md` (written when a provider outputs Publish)
@@ -64,9 +64,11 @@ class Provider(Protocol):
 ## Config & Secrets
 - `dialectica.yml` (project defaults) + environment variables + CLI. Resolved config written to `runs/<id>/run.yml`.
 - `.env` holds secrets (API keys). No telemetry by default.
-## JSON Usage & Retries
-- Ideas/ratings: structured JSON preferred with schema validation (ideas_v1, ratings_v1). On invalid JSON, retry up to 2 times with guidance, then fail hard and persist payloads.
-- Drafts: Markdown only.
+## JSON Usage (No Fallback)
+- Ideas and ratings: structured JSON (ideas_v1, ratings_v1) required from providers. Any invalid JSON/timeout/error aborts the run immediately; artifacts record failure status.
+- Drafts: Markdown only (pretty-rendered in TUI).
+## Criteria
+- A `criteria.json` defines an overview and key/value pairs of criteria names to descriptions; TUI uses it to render score legends and explanations.
 
 ## Error Handling
 - ProviderError, PromptError, ArtifactError for precise failure modes.

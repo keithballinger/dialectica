@@ -1,0 +1,6 @@
+constraints: constraints/compsci.md
+domain: domain_compsci
+field: compsci
+name: compsci_auto
+phase: selected
+selected: 2

@@ -1,0 +1,5 @@
+constraints: constraints/quantum_gravity_constraints.json
+domain: domain_compsci
+field: compsci
+name: quantum_gravity
+phase: kickoff

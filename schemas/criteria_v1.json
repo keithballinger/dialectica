@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dialectica.ai/schemas/criteria_v1.json",
+  "title": "criteria_v1",
+  "type": "object",
+  "properties": {
+    "overview": { "type": "string" },
+    "criteria": {
+      "type": "object",
+      "propertyNames": { "type": "string", "minLength": 1 },
+      "additionalProperties": { "type": "string" }
+    }
+  },
+  "required": ["overview", "criteria"],
+  "additionalProperties": false
+}

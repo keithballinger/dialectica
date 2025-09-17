@@ -1,0 +1,5 @@
+constraints: constraints/comsci_auto_constraints.json
+domain: domain_compsci
+field: compsci
+name: comsci_auto
+phase: ideas

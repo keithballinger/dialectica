@@ -1,0 +1,1 @@
+GPT5 JSON schema API error: Error code: 400 - {'error': {'message': "Invalid schema for response_format 'ratings_v1': In context=(), 'allOf' is not permitted.", 'type': 'invalid_request_error', 'param': 'response_format', 'code': None}}

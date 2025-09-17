@@ -17,7 +17,7 @@
    - CLI: `--constraints <files> [,files]`, `--constraints-text "..."`, `--constraints-stdin`.
    - Field auto-detects from the primary constraints file (e.g., `compsci.md` → field `compsci`), or override with `--field`. Domain pack auto-maps from field, or override with `--domain`.
    - Either generate 10 ideas with the idea generator, or seed from an existing ideas file using `--from-ideas`.
-2) Scoring (single-run flow): obtain ratings from configured raters (≥1) across configured rubric criteria (overall required). Save ratings files and `scoring_prompt.md`.
+2) Scoring (single-run flow): obtain ratings from configured raters (≥1) as JSON only (ratings_v1) across configured rubric criteria (overall required). Save a single `ratings.json` and `scoring_prompt.md`. Any invalid/timeout/error aborts the run.
 3) Selection (single-run flow):
    - Manual: `dialectica select` shows titles for picking.
    - Auto: sum across raters × criteria (weights in rubric); tie-break random (optional `--seed`).
@@ -25,15 +25,15 @@
 5) Judgment First: each critique starts with Reject/Major Revisions/Minor Revisions/Publish.
    - If Publish, record a judgment only (no new draft).
 6) Termination: stop when at least two models output “Publish” for the latest draft (Publish tied to older drafts is ignored).
-7) Batch mode: `--all-ideas` drafts a separate paper for every idea (no scoring), each in its own run.
+7) Batch mode: `--all-ideas` drafts a separate paper for every idea (no scoring). Ideas are always JSON (ideas_v1); any failure aborts the run.
 8) Output: save `paper.md` (full), `paper_only.md` (body), `paper_annotated.md` (lay annotations), `consensus.md`, and all intermediate Markdown files under the run folder.
 
 ## Quality Gates
-- Prompts include constraints verbatim from files plus any inline/STDIN segments.
+- Prompts include constraints from files plus any inline/STDIN segments.
 - Field and domain pack resolved and persisted to `run.yml`.
-- Ideas include Smart layperson sections and structured fields.
-- Ratings prefer JSON with schema validation (ideas/ratings only); drafts remain Markdown.
-- On invalid JSON, retry up to 2 times with guidance; then fail with artifacts for diagnosis.
+- Ideas must be JSON (ideas_v1). Ratings must be JSON (ratings_v1). No fallbacks; invalid JSON or timeout aborts the run.
+- Criteria are defined in a JSON file with an overview and key/value pairs (e.g., `criteria.json`).
+- Drafts remain Markdown and are displayed with pretty rendering in the TUI.
 - All provider responses captured to Markdown with timestamps and model identifiers.
 - Runs are reproducible with `run.yml` snapshot, kickoff prompt, constraints sources, and selected idea.
 

@@ -3,5 +3,5 @@ constraints: constraints/llm.md
 name: llm-idea-1
 next: gpt5
 phase: drafting
-round: 6
+round: 21
 selected: 1

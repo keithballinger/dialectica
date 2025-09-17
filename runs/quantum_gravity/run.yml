@@ -1,0 +1,8 @@
+field: compsci
+prompts:
+  pack: domain_compsci
+constraints:
+  files:
+    - constraints/quantum_gravity_constraints.json
+  format: json
+criteria_file:

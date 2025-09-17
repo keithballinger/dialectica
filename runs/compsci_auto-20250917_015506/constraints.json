@@ -1,0 +1,6 @@
+{
+  "overview": "LLM research.",
+  "constraints": {
+    "testable": "can use code to validate"
+  }
+}

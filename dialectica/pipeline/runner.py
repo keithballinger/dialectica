@@ -104,26 +104,37 @@ def kickoff_run(
     run_dir = create_run_dir(name=name)
     info(f"Run directory: {run_dir}")
 
-    inline_segments: list[str] = []
+    import json as _json
+    # Load and merge JSON constraints files; inline/stdin become part of overview text
+    constraints_data: dict = {"overview": "", "constraints": {}}
+    for p in constraints_files:
+        try:
+            obj = _json.loads(read_text(p))
+            if isinstance(obj, dict):
+                ov = obj.get("overview") or obj.get("description") or ""
+                if isinstance(ov, str) and ov:
+                    constraints_data["overview"] = (constraints_data["overview"] + "\n" + ov).strip()
+                kv = obj.get("constraints") or {}
+                if isinstance(kv, dict):
+                    constraints_data["constraints"].update(kv)
+        except Exception:
+            # If a non-JSON file is passed, abort
+            raise RuntimeError(f"Constraint file must be JSON: {p}")
+
     if constraints_inline_text:
-        inline_segments.append(constraints_inline_text)
+        constraints_data["overview"] = (constraints_data.get("overview", "") + "\n" + constraints_inline_text.strip()).strip()
     if constraints_stdin_text:
-        inline_segments.append(constraints_stdin_text)
+        constraints_data["overview"] = (constraints_data.get("overview", "") + "\n" + constraints_stdin_text.strip()).strip()
 
-    constraints_text = ("\n\n".join([
-        f"From: {p}\n\n" + read_text(p).strip() for p in constraints_files
-    ] + [f"From: inline#{i}\n\n" + seg.strip() for i, seg in enumerate(inline_segments, start=1)])).strip()
-
-    kickoff_prompt = compose_kickoff_prompt(constraints_text)
+    constraints_json_str = _json.dumps(constraints_data, indent=2)
+    kickoff_prompt = compose_kickoff_prompt(constraints_json_str)
     write_markdown(run_dir / "kickoff_prompt.md", kickoff_prompt)
     # Persist constraints
-    write_markdown(run_dir / "constraints.md", constraints_text)
+    write_markdown(run_dir / "constraints.json", constraints_json_str)
     write_markdown(
         run_dir / "constraints_sources.txt",
         ("\n".join(str(p) for p in constraints_files) + ("\n" if constraints_files else "")),
     )
-    if inline_segments:
-        write_markdown(run_dir / "constraints_inline.txt", "\n\n".join(inline_segments))
 
     resolved_field = field or _infer_field_from_paths(constraints_files)
     resolved_pack = domain_pack or _pack_from_field(resolved_field)
@@ -137,13 +148,16 @@ def kickoff_run(
         domain=resolved_pack,
     )
     # Snapshot minimal run config
+    # Include criteria.json if present at project root
+    criteria_path = Path("criteria.json")
     snapshot = {
         "field": resolved_field,
         "prompts": {"pack": resolved_pack},
         "constraints": {
             "files": [str(p) for p in constraints_files],
-            "inline_present": bool(inline_segments),
+            "format": "json",
         },
+        "criteria_file": str(criteria_path) if criteria_path.exists() else "",
     }
     write_run_snapshot(run_dir, snapshot)
     done("Kickoff artifacts written")
@@ -153,15 +167,21 @@ def kickoff_run(
 def generate_ideas(run_dir: Path, constraints_files: Sequence[Path], count: int = 10) -> Path:
     step("Generate ideas")
     info("Reading constraints")
-    constraints_text = read_text(run_dir / "constraints.md")
+    constraints_text = read_text(run_dir / "constraints.json")
     info("Composing ideas prompt")
     field = load_state(run_dir).get("field", "general")
     prompt = compose_ideas_prompt(constraints_text, field=field)
-    info("Calling GPT5 provider")
+    info("Calling GPT5 provider (JSON ideas)")
     provider = gpt5.get_provider()
-    result = provider.complete(prompt)
-    info("Saving ideas and prompt")
-    write_markdown(run_dir / "ideas_gpt5.md", result)
+    try:
+        schema_path = Path("schemas/ideas_v1.json")
+        ideas_json = provider.complete_with_json_schema(prompt, schema_path, "ideas_v1")
+    except Exception as e:
+        write_markdown(run_dir / "ideas_error.md", str(e))
+        write_markdown(run_dir / "error.log", f"Ideas generation failed: {e}\n")
+        raise
+    info("Saving ideas.json and prompt")
+    write_markdown(run_dir / "ideas.json", ideas_json)
     write_markdown(run_dir / "ideas_prompt.md", prompt)
     save_state(run_dir, phase="ideas")
     done("Ideas generated")
@@ -171,9 +191,9 @@ def generate_ideas(run_dir: Path, constraints_files: Sequence[Path], count: int 
 def score_ideas(run_dir: Path, constraints_files: Sequence[Path]) -> None:
     step("Score ideas")
     info("Loading ideas")
-    ideas_text = read_text(run_dir / "ideas_gpt5.md")
+    ideas_text = read_text(run_dir / "ideas.json")
     info("Reading constraints")
-    constraints_text = read_text(run_dir / "constraints.md")
+    constraints_text = read_text(run_dir / "constraints.json")
     info("Composing scoring prompt (JSON schema)")
     rubric = [
         "overall",
@@ -189,24 +209,49 @@ def score_ideas(run_dir: Path, constraints_files: Sequence[Path]) -> None:
     ]
     prompt = compose_scoring_prompt(constraints_text, ideas_text, rubric)
 
-    info("Calling GPT5 for ratings (with retries)")
-    ok_gpt, ratings_gpt = _ratings_with_retries(gpt5.get_provider(), prompt)
-    write_markdown(run_dir / "ratings_gpt5.md", ratings_gpt)
-    if not ok_gpt:
-        raise RuntimeError("GPT5 ratings invalid after retries; see ratings_gpt5.md for payload")
+    info("Calling GPT5 for ratings")
+    try:
+        ratings_gpt = _ratings_once(run_dir, "gpt5", gpt5.get_provider(), prompt)
+        write_markdown(run_dir / "ratings_gpt5.md", ratings_gpt)
+    except Exception as e:
+        write_markdown(run_dir / "ratings_gpt5_error.md", str(e))
+        write_markdown(run_dir / "error.log", f"GPT5 ratings failed: {e}\n")
+        raise
 
-    info("Calling Grok4 for ratings (with retries)")
-    ok_grok, ratings_grok = _ratings_with_retries(grok.get_provider(), prompt)
-    write_markdown(run_dir / "ratings_grok4.md", ratings_grok)
-    if not ok_grok:
-        raise RuntimeError("Grok ratings invalid after retries; see ratings_grok4.md for payload")
+    info("Calling Grok4 for ratings")
+    try:
+        ratings_grok = _ratings_once(run_dir, "grok4", grok.get_provider(), prompt)
+        write_markdown(run_dir / "ratings_grok4.md", ratings_grok)
+    except Exception as e:
+        write_markdown(run_dir / "ratings_grok4_error.md", str(e))
+        write_markdown(run_dir / "error.log", f"Grok4 ratings failed: {e}\n")
+        raise
 
-    info("Calling Gemini 2.5 Pro for ratings (with retries)")
-    ok_gem, ratings_gem = _ratings_with_retries(gemini.get_provider(), prompt)
-    write_markdown(run_dir / "ratings_gemini.md", ratings_gem)
-    if not ok_gem:
-        raise RuntimeError("Gemini ratings invalid after retries; see ratings_gemini.md for payload")
+    info("Calling Gemini 2.5 Pro for ratings")
+    try:
+        ratings_gem = _ratings_once(run_dir, "gemini", gemini.get_provider(), prompt)
+        write_markdown(run_dir / "ratings_gemini.md", ratings_gem)
+    except Exception as e:
+        write_markdown(run_dir / "ratings_gemini_error.md", str(e))
+        write_markdown(run_dir / "error.log", f"Gemini ratings failed: {e}\n")
+        raise
 
+    # Combine ratings into one JSON file with lists per rater
+    import json as _json
+    try:
+        gpt_items = _json.loads(ratings_gpt).get("items", [])
+    except Exception:
+        gpt_items = []
+    try:
+        grok_items = _json.loads(ratings_grok).get("items", [])
+    except Exception:
+        grok_items = []
+    try:
+        gem_items = _json.loads(ratings_gem).get("items", [])
+    except Exception:
+        gem_items = []
+    combined = {"raters": {"gpt5": gpt_items, "grok4": grok_items, "gemini": gem_items}}
+    write_markdown(run_dir / "ratings.json", _json.dumps(combined, indent=2))
     info("Saving scoring prompt")
     write_markdown(run_dir / "scoring_prompt.md", prompt)
     save_state(run_dir, phase="scored")
@@ -327,36 +372,31 @@ def auto_select_by_sum(run_dir: Path, seed: int | None = None) -> int:
 
 
 def total_scores(run_dir: Path) -> list[int]:
-    """Return total scores [len=10] by summing raters over rubric criteria.
-
-    Supports JSON ratings_v1 (preferred). Falls back to single-line format.
-    """
-    files = [
-        ("gpt5", run_dir / "ratings_gpt5.md"),
-        ("grok4", run_dir / "ratings_grok4.md"),
-        ("gemini", run_dir / "ratings_gemini.md"),
-    ]
-    weights = {
-        "overall": 1.0,
-        "novelty": 0.8,
-        "experimental_feasibility": 0.8,
-        "clarity": 0.6,
-        "theoretical_soundness": 0.7,
-        "computational_feasibility": 0.6,
-        "reproducibility": 0.6,
-        "falsifiability_rigor": 0.7,
-        "impact_potential": 0.5,
-        "scalability": 0.5,
-    }
-    totals = [0.0] * 10
-    for _, path in files:
-        if not path.exists():
+    """Return total scores [len=10] by summing raters' overall scores from ratings.json.
+    Requires ratings.json (ratings_v1 combined)."""
+    import json as _json
+    path = run_dir / "ratings.json"
+    if not path.exists():
+        # Backward safety: 0's so auto-select doesn't pick nonsense
+        return [0] * 10
+    data = _json.loads(read_text(path))
+    # Expect structure: { "raters": { "gpt5": items[], "grok4": items[], "gemini": items[] } }
+    totals = [0] * 10
+    raters = data.get("raters", {})
+    for items in raters.values():
+        if not isinstance(items, list):
             continue
-        text = read_text(path)
-        scores = _scores_from_ratings_text(text, weights)
-        for i in range(min(10, len(scores))):
-            totals[i] += scores[i]
-    return [int(round(x)) for x in totals]
+        for it in items:
+            try:
+                idx = int(it.get("index", 0))
+                crit = it.get("criteria", {})
+                ov = crit.get("overall", {})
+                sc = ov.get("score") if isinstance(ov, dict) else None
+                if isinstance(sc, int) and 1 <= idx <= 10:
+                    totals[idx - 1] += sc
+            except Exception:
+                continue
+    return totals
 
 
 def indices_by_threshold(run_dir: Path, threshold: int | None) -> list[int]:
@@ -372,7 +412,7 @@ def indices_by_threshold(run_dir: Path, threshold: int | None) -> list[int]:
 def first_draft(run_dir: Path, constraints_files: Sequence[Path]) -> Path:
     step("Initial draft (GPT5)")
     info("Reading constraints and selected idea")
-    constraints_text = read_text(run_dir / "constraints.md")
+    constraints_text = read_text(run_dir / "constraints.json")
     selected = read_text(run_dir / "selected_idea.md")
     info("Composing first-draft prompt")
     field = load_state(run_dir).get("field", "general")
@@ -390,7 +430,7 @@ def first_draft(run_dir: Path, constraints_files: Sequence[Path]) -> Path:
 def next_round(run_dir: Path, constraints_files: Sequence[Path], round_num: int, provider_name: str) -> tuple[int, str]:
     step(f"Drafting round {round_num} → {provider_name}")
     info("Reading constraints and latest draft")
-    constraints_text = read_text(run_dir / "constraints.md")
+    constraints_text = read_text(run_dir / "constraints.json")
     latest = latest_draft_path(run_dir)
     latest_text = read_text(latest)
     info("Composing critique+rewrite prompt")
@@ -553,18 +593,37 @@ def _scores_from_ratings_text(text: str, weights: dict[str, float]) -> list[floa
         return [float(x) for x in line_scores]
 
 
-def _ratings_with_retries(provider, prompt_base: str, max_attempts: int = 3) -> tuple[bool, str]:
-    guidance = "\nReturn valid JSON only, no extra text. Ensure it matches ratings_v1 and includes 'overall'."
-    prompt = prompt_base
-    last_out = ""
-    for attempt in range(1, max_attempts + 1):
-        out = provider.complete(prompt)
-        last_out = out
-        try:
-            _parse_ratings_json(out)
-            return True, out
-        except Exception:
-            if attempt == max_attempts:
-                break
-            prompt = prompt_base + "\n\n" + guidance
-    return False, last_out
+def _ratings_once(run_dir: Path, provider_key: str, provider, prompt: str, timeout_s: int = 60) -> str:
+    """Call provider once with structured outputs where available, validate JSON, or raise.
+    No retries, no repair; any failure aborts the run.
+    """
+    status_path = run_dir / "status" / f"ratings_{provider_key}.txt"
+    write_markdown(status_path, "requesting\n")
+    try:
+        from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeout  # local import
+        def _call():
+            if provider_key == "gpt5" and hasattr(provider, "complete_with_json_schema"):
+                schema_path = Path("schemas/ratings_v1.json")
+                return provider.complete_with_json_schema(prompt, schema_path, "ratings_v1")
+            if provider_key == "grok4" and hasattr(provider, "complete_with_json_object"):
+                return provider.complete_with_json_object(prompt)
+            if provider_key == "gemini" and hasattr(provider, "complete_json"):
+                return provider.complete_json(prompt)
+            return provider.complete(prompt)
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            future = pool.submit(_call)
+            out = future.result(timeout=timeout_s)
+    except FutureTimeout:
+        write_markdown(status_path, f"timeout after {timeout_s}s\n")
+        raise RuntimeError(f"{provider_key} ratings timed out after {timeout_s}s")
+    except Exception as e:
+        write_markdown(status_path, f"error {e}\n")
+        raise
+    # Validate JSON
+    try:
+        _parse_ratings_json(out)
+        write_markdown(status_path, "ok\n")
+        return out
+    except Exception:
+        write_markdown(status_path, "invalid JSON\n")
+        raise RuntimeError(f"{provider_key} ratings returned invalid JSON")

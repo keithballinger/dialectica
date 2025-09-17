@@ -1,0 +1,94 @@
+{
+  "ideas": [
+    {
+      "index": 1,
+      "title": "A Diversity Threshold Governs Self-Consistency Gains in LLM Reasoning",
+      "summary": "Self-consistency only boosts accuracy once prompt-response diversity exceeds a task-dependent threshold.",
+      "layperson": "LLMs often perform better by generating many answers and picking the most common one. This idea says that this only helps when those answers are actually different enough from each other. If the attempts are too similar, the extra samples don’t improve results.",
+      "falsification": "Implement self-consistency on reasoning benchmarks (e.g., GSM8K, StrategyQA), generate k samples per query with controlled diversity via paraphrasing temperature and semantic constraints, and compute average pairwise embedding distance among samples. If accuracy increases monotonically with k regardless of diversity, or increases without a detectable distance threshold, the theory is falsified.",
+      "ibm_cost_plan": "Implementation: Python, Hugging Face Transformers, sentence-transformers for diversity metrics; run across GSM8K/StrategyQA with varying k, temperature, and paraphrase prompts. Budget: ~120 A100-GPU hours or ~$1.5k on cloud; cache generations to reduce cost. Metrics: accuracy vs. average pairwise embedding distance; breakpoint detection via segmented regression and likelihood ratio tests.",
+      "novelty": "Prior work shows self-consistency helps but does not propose or test a concrete diversity threshold as the governing mechanism."
+    },
+    {
+      "index": 2,
+      "title": "RLHF Sample Efficiency Inversely Scales with Label Entropy",
+      "summary": "The improvement per unit compute in RLHF is a decreasing function of preference label entropy (annotator disagreement).",
+      "layperson": "When human raters disagree a lot about which answers are better, the training signal is noisy. This idea predicts that RLHF will learn more slowly when rater disagreement is higher. Lower disagreement should yield bigger gains for the same compute.",
+      "falsification": "Collect or simulate preference datasets with matched size but varying entropy (e.g., by mixing raters or injecting controlled noise). Train identical models with PPO or DPO at fixed compute and measure win-rate and reward improvements. If improvements per step do not decrease as entropy increases, the theory is falsified.",
+      "ibm_cost_plan": "Implementation: TRL (PPO) and DPO baselines on a 1–3B parameter model using synthetic and open preference sets (e.g., Anthropic HH, OpenAssistant) with controlled noise injection. Budget: ~200 GPU-hours on A100s; early-stop checkpoints to compute efficiency slopes. Metrics: win-rate vs. a strong baseline, reward model score deltas, slope of improvement per FLOP against measured entropy.",
+      "novelty": "Links a measurable property of human labels—entropy—to a quantitative law of RLHF sample efficiency, enabling predictive planning of data curation."
+    },
+    {
+      "index": 3,
+      "title": "Synthetic Knowledge Expansion Follows Coverage-Limited Saturation",
+      "summary": "Gains from synthetic QA generation saturate when coverage of an external knowledge graph plateau is reached.",
+      "layperson": "Training on AI-generated facts can help models remember more, but only until you’ve covered the important facts in a knowledge graph. After that, more synthetic data doesn’t help much. This predicts a clear point where adding more synthetic questions stops giving benefits.",
+      "falsification": "Use a subset of Wikidata to generate QA pairs at controlled coverage levels (e.g., 20%, 40%, …, 100%), fine-tune a base model, and evaluate closed-book factual recall. If recall continues improving after the measured graph coverage saturates or shows no saturation near full coverage, the theory is falsified.",
+      "ibm_cost_plan": "Implementation: Wikidata toolkit to sample subgraphs; LLM-driven templated QA synthesis; fine-tune a 1–3B model on each coverage tier. Budget: ~150 GPU-hours; reuse tokenized datasets. Metrics: closed-book recall (exact match), calibration (ECE), and curve fitting to detect saturation via asymptotic models.",
+      "novelty": "Posits an explicit, measurable saturation law tied to external knowledge graph coverage rather than training set size alone."
+    },
+    {
+      "index": 4,
+      "title": "Inverted-U Law for Scratchpad Token Budget in Reasoning",
+      "summary": "Reasoning accuracy exhibits an inverted-U relationship with the maximum allowed chain-of-thought token budget.",
+      "layperson": "Letting models think out loud can help, but too little space is constraining and too much can be distracting. This idea predicts there’s a sweet spot in how many thinking tokens you allow. Beyond that point, performance starts dropping.",
+      "falsification": "Impose hard caps on chain-of-thought length (e.g., 0, 16, 32, 64, 128, 256 tokens) via stop rules and compare accuracy on GSM8K, SVAMP, and ARC-Challenge. If performance is monotonic with token cap or shows no statistically significant peak, the theory is falsified.",
+      "ibm_cost_plan": "Implementation: Decoding hooks to enforce token caps; standardized prompts; evaluate across three reasoning benchmarks. Budget: ~80 GPU-hours for decoding and evaluation. Metrics: accuracy vs. cap, response time, and AIC/BIC for quadratic vs. monotonic fit to validate inverted-U.",
+      "novelty": "Introduces a precise functional form (inverted-U) for scratchpad length effects rather than vague claims about 'more thinking helps'."
+    },
+    {
+      "index": 5,
+      "title": "Uncertainty-Conditional Superiority of Chain-of-Verification over Chain-of-Thought",
+      "summary": "Chain-of-Verification outperforms Chain-of-Thought specifically for high-uncertainty instances identified by model entropy.",
+      "layperson": "Sometimes checking your work beats just thinking harder. This idea says that when the model is unsure, asking it to verify answers helps more than asking it to think step by step. When it’s confident, verification adds less.",
+      "falsification": "Estimate per-instance uncertainty via predictive entropy or dropout ensembles, then bucket test questions into quantiles and compare CoV vs. CoT accuracy per bucket. If CoV does not significantly exceed CoT in high-uncertainty buckets while not doing so in low-uncertainty ones, the theory is falsified.",
+      "ibm_cost_plan": "Implementation: Add verification prompts; compute token-level entropy from logits; group instances by entropy quantiles on datasets like MMLU and GSM8K. Budget: ~60 GPU-hours for decoding with multiple samples. Metrics: accuracy uplift vs. CoT by uncertainty quantile; interaction term significance in logistic regression.",
+      "novelty": "Moves beyond average-case claims by predicting a specific interaction between uncertainty and the relative value of verification."
+    },
+    {
+      "index": 6,
+      "title": "Planner–Executor Modularity is Necessary for Robust Tool Use",
+      "summary": "LLM agents achieve reliable gains from external tools only when planning and execution are separated into distinct modules.",
+      "layperson": "Agents that both plan and act in one step can get confused. Separating the step that decides what to do from the step that does it should make tool use more reliable. This predicts modular agents will beat monolithic ones on complex tasks.",
+      "falsification": "Build two agents with identical model capacity: (a) monolithic tool-use prompting and (b) explicit planner and executor prompts with restricted interfaces. Evaluate on WebShop, HotpotQA with retrieval, and program synthesis with a Python REPL. If the modular agent does not significantly outperform across tasks and perturbations, the theory is falsified.",
+      "ibm_cost_plan": "Implementation: LangChain/semantic-kernel scaffolds; same base model; controlled ablations of interfaces. Budget: ~100 GPU-hours plus modest API costs for web tasks. Metrics: task success rate, tool-call precision/recall, and robustness under injected tool failures.",
+      "novelty": "Asserts a necessary architectural constraint (modularity) for tool-use reliability, not just that tools help."
+    },
+    {
+      "index": 7,
+      "title": "Causal Edits Generalize Along Logit-Lens-Aligned Linear Subspaces",
+      "summary": "Representation edits propagate reliably when the edit direction aligns with principal axes of the logit lens.",
+      "layperson": "When we nudge a model’s internal activations to fix a fact, the change sometimes spreads usefully and sometimes breaks things. This idea says edits work best when they line up with the model’s own major internal directions. Alignment can be measured before editing.",
+      "falsification": "Compute principal components of logit-lens projections per layer; perform ROME/causal tracing edits and measure generalization across contexts. If edit generalization does not correlate with cosine alignment to these components or edits off-axis generalize equally well, the theory is falsified.",
+      "ibm_cost_plan": "Implementation: Use logit lens and PCA on hidden states; integrate with ROME/MEMIT code; test on factual edits (COUNTERFACT). Budget: ~120 GPU-hours on 1–7B models. Metrics: locality and generalization scores vs. alignment; Spearman correlation with confidence intervals.",
+      "novelty": "Connects a concrete geometric criterion (logit-lens alignment) to when causal representation edits will generalize."
+    },
+    {
+      "index": 8,
+      "title": "Contradiction-Centric LoRA Reduces Hallucinations More Than Instruction Tuning",
+      "summary": "Small LoRA adapters trained to detect contradictions yield larger factuality gains than equal-token instruction tuning.",
+      "layperson": "Training a lightweight add-on to catch contradictions may curb made-up statements better than general instruction training of the same size. The adapter makes the model more sensitive to statements that disagree with known facts.",
+      "falsification": "Train matched-compute LoRA: (a) contradiction-focused (MNLI/ANLI, fact-contradiction pairs) vs. (b) generic instruction data. Evaluate hallucination on TruthfulQA, factual QA with retrieval off/on. If (a) does not reduce hallucination rates more than (b) under equal compute, the theory is falsified.",
+      "ibm_cost_plan": "Implementation: PEFT LoRA on a 1–3B model; curated contradiction datasets; comparable token budgets. Budget: ~80 GPU-hours. Metrics: hallucination rate, fact-consistency (FactCC), and calibration; bootstrap CIs for differences.",
+      "novelty": "Posits that targeted contradiction sensitivity is a more compute-efficient route to factuality than generic instruction tuning."
+    },
+    {
+      "index": 9,
+      "title": "Entropy-Gated Dynamic Decoding Cuts Hallucinations at Constant Latency",
+      "summary": "Using an entropy threshold to early-stop or expand decoding reduces hallucinations without increasing average response time.",
+      "layperson": "By watching how uncertain the model is as it generates text, we can decide when to stop early or explore more. This should reduce wrong confident answers while keeping the response time the same on average.",
+      "falsification": "Implement token-level entropy gating with a global latency budget: allocate extra samples only for high-entropy prefixes and stop early for low-entropy ones. Compare to fixed-sample baselines at matched average tokens on TruthfulQA and QA tasks. If hallucination does not drop at equal latency, the theory is falsified.",
+      "ibm_cost_plan": "Implementation: Modify decoder to compute rolling entropy; controller to enforce average token budget. Budget: ~60 GPU-hours. Metrics: hallucination rate, average tokens/latency, and area under risk–compute curves; paired tests versus baseline.",
+      "novelty": "Proposes a concrete control policy that conditions test-time compute on uncertainty to change the risk–latency Pareto frontier."
+    },
+    {
+      "index": 10,
+      "title": "On-the-Fly Rare-Token Pruning Improves Perplexity–Throughput Trade-off",
+      "summary": "Pruning rarely used vocabulary tokens and backing off to byte-level composition improves throughput with minimal perplexity loss after a brief retune.",
+      "layperson": "Many tokens in a model’s vocabulary are almost never used but still slow things down. Dropping them and composing those words from smaller pieces can make the model faster with little loss in quality after a short fine-tune.",
+      "falsification": "Identify bottom-x% tokens by corpus frequency, remap them to byte-level pieces, and retune embeddings for a few epochs. If tokens/sec does not increase at equal batch/sequence settings or perplexity rises more than a small preset delta (e.g., +1%), the theory is falsified.",
+      "ibm_cost_plan": "Implementation: Tokenizer surgery with SentencePiece/BPE; embedding remap; brief fine-tune on OpenWebText. Budget: ~70 GPU-hours. Metrics: tokens/sec, memory footprint, and validation perplexity; ablate x% to trace the trade-off curve.",
+      "novelty": "Introduces a practical hybrid tokenization intervention that can be validated with code and standard metrics to shift efficiency–quality trade-offs."
+    }
+  ]
+}

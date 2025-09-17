@@ -84,6 +84,12 @@ def save_state(run_dir: Path, **entries: str | int) -> None:
     write_markdown(run_dir / STATE_FILE, "\n".join(lines) + "\n")
 
 
+def append_text(path: Path, content: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(content)
+
+
 def _yaml_dump(obj, indent: int = 0) -> str:
     sp = "  " * indent
     if isinstance(obj, dict):
