@@ -45,6 +45,31 @@ python -m dialectica run all --constraints constraints/quantum_ibm_cost.md --ask
 python -m dialectica resume
 ```
 
+## Constraint Files
+
+Constraints can be specified in two formats:
+
+**Markdown/Text (.md, .txt):**
+```markdown
+- In the field of computer science, focused on Large Language Model inference
+- Highly novel
+- Publishable in a leading journal for its subfield
+- Can be validated with code and small open source models
+```
+
+**JSON (.json):**
+```json
+{
+  "overview": "Research into using small LLMs for agentic coding",
+  "constraints": {
+    "testable": "Can validate with code",
+    "novelty": "Highly novel"
+  }
+}
+```
+
+Both formats are supported. Multiple constraint files can be combined using comma-separated paths.
+
 ## CLI Overview
 
 - `run ideas`:

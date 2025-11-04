@@ -106,11 +106,13 @@ def kickoff_run(
     info(f"Run directory: {run_dir}")
 
     import json as _json
-    # Load and merge JSON constraints files; inline/stdin become part of overview text
+    # Load and merge constraint files (JSON or Markdown); inline/stdin become part of overview text
     constraints_data: dict = {"overview": "", "constraints": {}}
     for p in constraints_files:
+        content = read_text(p)
         try:
-            obj = _json.loads(read_text(p))
+            # Try parsing as JSON first
+            obj = _json.loads(content)
             if isinstance(obj, dict):
                 ov = obj.get("overview") or obj.get("description") or ""
                 if isinstance(ov, str) and ov:
@@ -118,9 +120,10 @@ def kickoff_run(
                 kv = obj.get("constraints") or {}
                 if isinstance(kv, dict):
                     constraints_data["constraints"].update(kv)
-        except Exception:
-            # If a non-JSON file is passed, abort
-            raise RuntimeError(f"Constraint file must be JSON: {p}")
+        except (_json.JSONDecodeError, ValueError):
+            # If not JSON, treat as markdown/text and add to overview
+            info(f"Loading {p.suffix} file as text constraints")
+            constraints_data["overview"] = (constraints_data["overview"] + "\n" + content.strip()).strip()
 
     if constraints_inline_text:
         constraints_data["overview"] = (constraints_data.get("overview", "") + "\n" + constraints_inline_text.strip()).strip()
