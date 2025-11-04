@@ -23,6 +23,7 @@ from .artifacts import (
 from .consensus import parse_judgment, latest_judgments_by_provider, all_publish, two_publish
 from ..providers import gpt5, gemini, grok
 from ..log import step, info, done
+from ..literature import create_literature_review, search_literature, check_novelty
 
 
 def read_constraints(paths: Sequence[Path]) -> str:
@@ -164,13 +165,68 @@ def kickoff_run(
     return run_dir
 
 
+def perform_literature_search(
+    run_dir: Path, constraints_text: str, field: str, max_papers: int = 15
+) -> str | None:
+    """Perform literature search based on constraints and field.
+
+    Returns the literature review markdown text, or None if disabled/failed.
+    """
+    import os
+
+    # Check if literature search is enabled
+    if os.getenv("DIALECTICA_LITERATURE_SEARCH", "0") == "0":
+        info("Literature search disabled (set DIALECTICA_LITERATURE_SEARCH=1 to enable)")
+        return None
+
+    try:
+        # Extract search query from constraints
+        import json as _json
+        try:
+            constraints_data = _json.loads(constraints_text)
+            overview = constraints_data.get("overview", "")
+            # Build search query from field and overview
+            query = f"{field} {overview[:100]}"
+        except Exception:
+            # Fallback to field only
+            query = field
+
+        step("Performing literature search")
+        info(f"Search query: {query[:80]}...")
+
+        # Search academic databases
+        papers = search_literature(query, max_results=max_papers)
+
+        if not papers:
+            info("No papers found in literature search")
+            return None
+
+        # Create formatted literature review
+        lit_review = create_literature_review(query, max_results=max_papers)
+
+        # Save literature review as artifact
+        write_markdown(run_dir / "literature_review.md", lit_review)
+        info(f"Literature review saved: {len(papers)} papers found")
+
+        return lit_review
+
+    except Exception as e:
+        info(f"Literature search failed: {e}")
+        write_markdown(run_dir / "literature_search_error.txt", str(e))
+        return None
+
+
 def generate_ideas(run_dir: Path, constraints_files: Sequence[Path], count: int = 10) -> Path:
     step("Generate ideas")
     info("Reading constraints")
     constraints_text = read_text(run_dir / "constraints.json")
-    info("Composing ideas prompt")
     field = load_state(run_dir).get("field", "general")
-    prompt = compose_ideas_prompt(constraints_text, field=field)
+
+    # Perform optional literature search
+    lit_review = perform_literature_search(run_dir, constraints_text, field)
+
+    info("Composing ideas prompt")
+    prompt = compose_ideas_prompt(constraints_text, field=field, literature_context=lit_review)
     info("Calling GPT5 provider (JSON ideas)")
     provider = gpt5.get_provider()
     try:
@@ -414,9 +470,19 @@ def first_draft(run_dir: Path, constraints_files: Sequence[Path]) -> Path:
     info("Reading constraints and selected idea")
     constraints_text = read_text(run_dir / "constraints.json")
     selected = read_text(run_dir / "selected_idea.md")
+
+    # Load literature review if available
+    lit_review_path = run_dir / "literature_review.md"
+    lit_review = None
+    if lit_review_path.exists():
+        lit_review = read_text(lit_review_path)
+        info("Including literature review for citations")
+
     info("Composing first-draft prompt")
     field = load_state(run_dir).get("field", "general")
-    prompt = compose_first_draft_prompt(constraints_text, selected, field=field)
+    prompt = compose_first_draft_prompt(
+        constraints_text, selected, field=field, literature_context=lit_review
+    )
     info("Calling GPT5 for first draft")
     draft = gpt5.get_provider().complete(prompt)
     info("Saving draft and prompt")

@@ -20,6 +20,13 @@ def cmd_run_ideas(args: argparse.Namespace) -> None:
     if getattr(args, "constraints_stdin", False):
         import sys
         stdin_text = sys.stdin.read()
+
+    # Handle literature search flags
+    if getattr(args, "literature_search", False):
+        os.environ["DIALECTICA_LITERATURE_SEARCH"] = "1"
+    elif getattr(args, "no_literature_search", False):
+        os.environ["DIALECTICA_LITERATURE_SEARCH"] = "0"
+
     run_dir = runner.kickoff_run(
         constraints,
         name=args.name,
@@ -132,6 +139,13 @@ def cmd_run_all(args: argparse.Namespace) -> None:
     for p in constraints:
         if not Path(p).exists():
             raise SystemExit(f"Constraint file not found: {p}")
+
+    # Handle literature search flags
+    if getattr(args, "literature_search", False):
+        os.environ["DIALECTICA_LITERATURE_SEARCH"] = "1"
+    elif getattr(args, "no_literature_search", False):
+        os.environ["DIALECTICA_LITERATURE_SEARCH"] = "0"
+
     # Kickoff
     if getattr(args, "from_ideas", None):
         run_dir = runner.create_run_from_existing_ideas(Path(args.from_ideas), constraints, name=args.name)
@@ -298,6 +312,8 @@ def main(argv: list[str] | None = None) -> None:
     p_ideas.add_argument("--constraints-stdin", action="store_true", help="Read additional constraints from STDIN")
     p_ideas.add_argument("--field", type=str, help="Override inferred field (e.g., compsci, quantum)")
     p_ideas.add_argument("--domain", type=str, help="Override domain pack (e.g., domain_compsci)")
+    p_ideas.add_argument("--literature-search", action="store_true", help="Enable literature search for related papers")
+    p_ideas.add_argument("--no-literature-search", action="store_true", help="Disable literature search")
     p_ideas.set_defaults(func=cmd_run_ideas)
 
     # run score
@@ -335,6 +351,8 @@ def main(argv: list[str] | None = None) -> None:
     p_all.add_argument("--field", type=str, help="Override inferred field (e.g., compsci, quantum)")
     p_all.add_argument("--domain", type=str, help="Override domain pack (e.g., domain_compsci)")
     p_all.add_argument("--tui", action="store_true", help="Launch TUI dashboard alongside the run")
+    p_all.add_argument("--literature-search", action="store_true", help="Enable literature search for related papers")
+    p_all.add_argument("--no-literature-search", action="store_true", help="Disable literature search")
     p_all.set_defaults(func=cmd_run_all)
 
     # resume

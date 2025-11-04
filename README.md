@@ -7,6 +7,7 @@ Python 3.11+ CLI to orchestrate GPT5, Gemini 2.5 Pro, and Grok4 to generate, eva
 - Clone and enter the repo
 - Copy `.env.example` to `.env` and edit as needed
 - Optionally leave `DIALECTICA_DRY_RUN=1` enabled for offline testing
+- Install dependencies: `pip install -r requirements.txt`
 
 ### Generate ideas (dry-run)
 
@@ -69,10 +70,48 @@ python -m dialectica resume
   - Purpose: Continue a run from its last phase.
   - Flags: `--run <dir>`, `--ask-to-continue`, `--max-cycles <int>`
 
+## Literature Search Feature
+
+Dialectica can automatically search academic databases (Semantic Scholar, arXiv) to find related papers and integrate them into the idea generation and drafting process.
+
+### Enabling Literature Search
+
+Set the environment variable in your `.env` file:
+```
+DIALECTICA_LITERATURE_SEARCH=1
+```
+
+Or use CLI flags:
+```bash
+python -m dialectica run ideas --constraints constraints/compsci.md --literature-search
+
+python -m dialectica run all --constraints constraints/compsci.md --literature-search --auto-select
+```
+
+### What It Does
+
+1. **During Idea Generation**: Searches for related papers based on your constraints and field
+2. **Literature Review Artifact**: Saves `literature_review.md` in the run directory with paper summaries
+3. **Context for AI**: Provides literature context to GPT-5 to ensure ideas are novel and build on existing work
+4. **Citations in Drafts**: First draft includes citations to related work in markdown format `[Author et al., Year]`
+
+### Configuration
+
+- `DIALECTICA_LITERATURE_SEARCH=1` - Enable literature search (default: 0)
+- `SEMANTIC_SCHOLAR_API_KEY=...` - Optional API key for higher rate limits (default: public access)
+
+### Requirements
+
+The `arxiv` package is required for arXiv search (included in `requirements.txt`):
+```bash
+pip install arxiv>=2.1.0
+```
+
 ## Notes
 - Set `DIALECTICA_DRY_RUN=0` to call real providers (ensure valid API keys/models in `.env`).
 - Provider adapters live under `dialectica/providers/` and can be wired to real APIs.
 - Prompts and artifact flows live under `dialectica/pipeline/`.
+- Literature search uses free public APIs (Semantic Scholar, arXiv) with no authentication required.
 
 ## Common Flows
 

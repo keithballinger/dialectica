@@ -32,7 +32,25 @@ def compose_kickoff_prompt(constraints_text: str) -> str:
     ).strip()
 
 
-def compose_ideas_prompt(constraints_text: str, field: str = "general") -> str:
+def compose_ideas_prompt(
+    constraints_text: str, field: str = "general", literature_context: str | None = None
+) -> str:
+    # Add literature context if available
+    lit_section = ""
+    if literature_context:
+        lit_section = dedent(
+            f"""
+
+            Related Work (Literature Review):
+            The following papers have been identified as related to your field and constraints.
+            Your ideas should build upon, extend, or differ from this existing work to ensure novelty.
+
+            {literature_context[:2000]}...
+
+            IMPORTANT: Ensure your ideas are distinct from the papers listed above. Identify gaps or new directions.
+            """
+        ).strip()
+
     return dedent(
         f"""
         You are a creative scientific researcher. Be direct and concise.
@@ -42,6 +60,7 @@ def compose_ideas_prompt(constraints_text: str, field: str = "general") -> str:
 
         Constraints of Paper:
         {constraints_text}
+        {lit_section}
 
         IMPORTANT: You must provide EXACTLY 10 ideas numbered 1 through 10. Stop after idea 10.
 
@@ -86,7 +105,21 @@ def compose_scoring_prompt(constraints_text: str, ideas_text: str, rubric_criter
     ).strip()
 
 
-def compose_first_draft_prompt(constraints_text: str, selected_idea: str, field: str = "general") -> str:
+def compose_first_draft_prompt(
+    constraints_text: str, selected_idea: str, field: str = "general", literature_context: str | None = None
+) -> str:
+    lit_section = ""
+    if literature_context:
+        lit_section = dedent(
+            f"""
+
+            Related Work (for citations):
+            {literature_context[:3000]}...
+
+            Include proper citations to related work where appropriate. Use markdown format: [Author et al., Year]
+            """
+        ).strip()
+
     return dedent(
         f"""
         {SYSTEM_GUIDANCE}
@@ -99,8 +132,10 @@ def compose_first_draft_prompt(constraints_text: str, selected_idea: str, field:
 
         Selected Idea:
         {selected_idea}
+        {lit_section}
 
         Structure: Title, Abstract, Introduction, Method, Experiments (falsification plan), Discussion, Limitations, Conclusion.
+        If related work was provided, include citations where relevant to situate your work in the existing literature.
         """
     ).strip()
 
